@@ -62,5 +62,7 @@
 .report-section {
   min-height: 100vh;
   background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
-

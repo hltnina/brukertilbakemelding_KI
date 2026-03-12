@@ -1,3 +1,5 @@
+import Footer from '../components/Footer'
+
 function Home() {
   return (
     <>
@@ -14,7 +16,9 @@ function Home() {
         </div>
       </section>
 
-      <section className="report-section"></section>
+      <section className="report-section">
+        <Footer />
+      </section>
     </>
   )
 }
