@@ -6,6 +6,7 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.2.1",
     "autoprefixer": "^10.4.27",
+    "axios": "^1.13.6",
     "baseline-browser-mapping": "^2.10.0",
     "browserslist": "^4.28.1",
     "caniuse-lite": "^1.0.30001776",
@@ -19,6 +20,7 @@
     "postcss-value-parser": "^4.2.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
+    "react-router-dom": "^7.13.1",
     "source-map-js": "^1.2.1",
     "tailwindcss": "^4.2.1",
     "update-browserslist-db": "^1.2.3"
