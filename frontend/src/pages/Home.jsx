@@ -26,6 +26,8 @@ function Home() {
           </p>
         </div>
 
+        <div className="report-form-shell"></div>
+
         <Footer />
       </section>
     </>
