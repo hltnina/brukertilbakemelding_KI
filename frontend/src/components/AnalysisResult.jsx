@@ -1,4 +1,4 @@
-function AnalysisResult() {
+function AnalysisResult({ onEdit }) {
   return (
     <div className="analysis-shell">
       <h3>Generert analyse</h3>
@@ -50,7 +50,7 @@ function AnalysisResult() {
       </div>
 
       <div className="analysis-actions">
-        <button type="button" className="analysis-edit-button">
+        <button type="button" className="analysis-edit-button" onClick={onEdit}>
           Rediger
         </button>
         <button type="button" className="analysis-submit-button">

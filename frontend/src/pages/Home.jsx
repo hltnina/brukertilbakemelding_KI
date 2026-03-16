@@ -1,7 +1,11 @@
+import { useState } from 'react'
+import AnalysisResult from '../components/AnalysisResult'
 import Footer from '../components/Footer'
 import ReportForm from '../components/ReportForm'
 
 function Home() {
+  const [showAnalysis, setShowAnalysis] = useState(false)
+
   return (
     <>
       <section className="home-hero">
@@ -27,7 +31,11 @@ function Home() {
           </p>
         </div>
 
-        <ReportForm />
+        {showAnalysis ? (
+          <AnalysisResult onEdit={() => setShowAnalysis(false)} />
+        ) : (
+          <ReportForm onSubmit={() => setShowAnalysis(true)} />
+        )}
 
         <Footer />
       </section>
