@@ -96,6 +96,9 @@
   padding: 3rem 2.5rem;
   border-radius: 1.5rem;
   background: #6d98d0;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 .report-form-shell h3 {
@@ -129,6 +132,24 @@
 }
 
 .input-field input::placeholder {
+  color: #9ca3af;
+}
+
+.input-field textarea {
+  width: 100%;
+  min-height: 180px;
+  padding: 1rem 1.2rem;
+  border: 0;
+  border-radius: 0.9rem;
+  background: #ffffff;
+  color: #111827;
+  font-size: 1rem;
+  font-family: inherit;
+  resize: vertical;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.18);
+}
+
+.input-field textarea::placeholder {
   color: #9ca3af;
 }
 

@@ -1,4 +1,5 @@
 import InputField from './InputField'
+import TextAreaField from './TextAreaField'
 
 function ReportForm() {
   return (
@@ -9,6 +10,12 @@ function ReportForm() {
         label="Tittel på sak*"
         id="report-title"
         placeholder="Tittel på sak..."
+      />
+
+      <TextAreaField
+        label="Problembeskrivelse*"
+        id="report-description"
+        placeholder="Legg inn din beskrivelse..."
       />
     </div>
   )
