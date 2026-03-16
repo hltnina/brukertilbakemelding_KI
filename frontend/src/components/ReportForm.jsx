@@ -27,6 +27,13 @@ function ReportForm() {
           <button type="button">Alvorlighetsgrad</button>
         </div>
       </div>
+
+      <div className="upload-group">
+        <p>Last opp vedlegg (i form av fil, bilde eller video)*</p>
+        <button type="button" className="upload-button">
+          Last opp
+        </button>
+      </div>
     </div>
   )
 }
