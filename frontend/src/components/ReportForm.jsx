@@ -34,6 +34,10 @@ function ReportForm() {
           Last opp
         </button>
       </div>
+
+      <button type="button" className="submit-button">
+        Send inn
+      </button>
     </div>
   )
 }
