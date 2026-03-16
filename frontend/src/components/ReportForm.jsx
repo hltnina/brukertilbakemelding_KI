@@ -17,6 +17,16 @@ function ReportForm() {
         id="report-description"
         placeholder="Legg inn din beskrivelse..."
       />
+
+      <div className="option-group">
+        <p>Eller velg et av følgende alternativ</p>
+
+        <div className="option-buttons">
+          <button type="button">Opprett feilmelding</button>
+          <button type="button">Foreslå forbedring</button>
+          <button type="button">Alvorlighetsgrad</button>
+        </div>
+      </div>
     </div>
   )
 }

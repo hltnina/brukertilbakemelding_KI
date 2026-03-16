@@ -153,6 +153,36 @@
   color: #9ca3af;
 }
 
+.option-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.option-group p {
+  margin: 0;
+  color: #111827;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.option-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.option-buttons button {
+  border: 0;
+  border-radius: 0.9rem;
+  padding: 0.95rem 1.1rem;
+  background: #ffffff;
+  color: #111827;
+  font-size: 1rem;
+  font-weight: 500;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.18);
+}
+
 @media (max-width: 768px) {
   .report-intro {
     padding: 4rem 1.25rem 2rem;
@@ -167,5 +197,9 @@
     min-height: 480px;
     margin-bottom: 3rem;
     padding: 2rem 1.25rem;
+  }
+
+  .option-buttons {
+    grid-template-columns: 1fr;
   }
 }
