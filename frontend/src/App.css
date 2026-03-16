@@ -223,6 +223,22 @@
   box-shadow: 0 12px 24px rgba(15, 23, 42, 0.24);
 }
 
+.analysis-shell {
+  width: min(100% - 3rem, 980px);
+  min-height: 640px;
+  margin: 0 auto 4rem;
+  padding: 3rem 2.5rem;
+  border-radius: 1.5rem;
+  background: #6d98d0;
+}
+
+.analysis-shell h3 {
+  margin: 0;
+  color: #111827;
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-weight: 800;
+}
+
 @media (max-width: 768px) {
   .report-intro {
     padding: 4rem 1.25rem 2rem;
@@ -233,6 +249,13 @@
   }
 
   .report-form-shell {
+    width: calc(100% - 2rem);
+    min-height: 480px;
+    margin-bottom: 3rem;
+    padding: 2rem 1.25rem;
+  }
+
+  .analysis-shell {
     width: calc(100% - 2rem);
     min-height: 480px;
     margin-bottom: 3rem;
