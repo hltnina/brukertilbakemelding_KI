@@ -282,6 +282,26 @@
   box-shadow: 0 8px 20px rgba(15, 23, 42, 0.18);
 }
 
+.analysis-text-box {
+  width: 100%;
+  min-height: 240px;
+  padding: 1.5rem 1.6rem;
+  border-radius: 0.9rem;
+  background: #ffffff;
+  color: #111827;
+  font-size: 1rem;
+  line-height: 1.45;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.18);
+}
+
+.analysis-text-box p {
+  margin: 0 0 1.5rem;
+}
+
+.analysis-text-box p:last-child {
+  margin-bottom: 0;
+}
+
 @media (max-width: 768px) {
   .report-intro {
     padding: 4rem 1.25rem 2rem;
