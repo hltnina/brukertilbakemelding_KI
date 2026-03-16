@@ -17,6 +17,15 @@ function Home() {
       </section>
 
       <section className="report-section">
+        <div className="report-intro">
+          <h2>Send inn din rapport</h2>
+          <p>
+            Beskriv problemet eller velg en prompt-mal. Last opp vedlegg og send
+            inn for umiddelbare svar. Se gjennom og send deretter direkte til
+            Github issues.
+          </p>
+        </div>
+
         <Footer />
       </section>
     </>
