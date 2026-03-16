@@ -32,6 +32,22 @@ function AnalysisResult() {
           </p>
         </div>
       </div>
+
+      <div className="analysis-field">
+        <label>Foreslått utbedring</label>
+        <div className="analysis-text-box">
+          <p>
+            I denne seksjonen genereres spesifikke og tekniske
+            utbedringsforslag basert pa de identifiserte problemene i innsendt
+            materiale.
+          </p>
+          <p>
+            Systemet omgjor komplekse tilbakemeldinger til konkrete losninger
+            som er skreddersydd for din tjeneste, slik at du far en ferdig
+            oppskrift pa hvordan feilene kan rettes.
+          </p>
+        </div>
+      </div>
     </div>
   )
 }
