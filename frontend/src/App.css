@@ -302,6 +302,34 @@
   margin-bottom: 0;
 }
 
+.analysis-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.analysis-edit-button,
+.analysis-submit-button {
+  min-width: 14rem;
+  border: 0;
+  border-radius: 0.9rem;
+  padding: 1rem 2rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.24);
+}
+
+.analysis-edit-button {
+  background: #ffffff;
+  color: #1f3b73;
+}
+
+.analysis-submit-button {
+  background: #1f3b73;
+  color: #f8fafc;
+}
+
 @media (max-width: 768px) {
   .report-intro {
     padding: 4rem 1.25rem 2rem;
@@ -323,6 +351,15 @@
     min-height: 480px;
     margin-bottom: 3rem;
     padding: 2rem 1.25rem;
+  }
+
+  .analysis-actions {
+    flex-direction: column;
+  }
+
+  .analysis-edit-button,
+  .analysis-submit-button {
+    width: 100%;
   }
 
   .option-buttons {

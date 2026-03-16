@@ -48,6 +48,15 @@ function AnalysisResult() {
           </p>
         </div>
       </div>
+
+      <div className="analysis-actions">
+        <button type="button" className="analysis-edit-button">
+          Rediger
+        </button>
+        <button type="button" className="analysis-submit-button">
+          Send inn
+        </button>
+      </div>
     </div>
   )
 }
