@@ -1,5 +1,3 @@
-# brukertilbakemelding_KI
-
 # Brukertilbakemelding_KI
 
 Dette repositoryet inneholder arbeidet vårt med bachelorprosjektet **Brukertilbakemelding_KI**, utviklet i samarbeid med **Tingtun AS**. Prosjektet undersøker hvordan **kunstig intelligens (KI)** kan brukes til å analysere og kategorisere brukertilbakemeldinger relatert til **universell utforming og WCAG**.
