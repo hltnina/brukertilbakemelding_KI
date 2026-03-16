@@ -1,4 +1,5 @@
 import Footer from '../components/Footer'
+import ReportForm from '../components/ReportForm'
 
 function Home() {
   return (
@@ -26,7 +27,7 @@ function Home() {
           </p>
         </div>
 
-        <div className="report-form-shell"></div>
+        <ReportForm />
 
         <Footer />
       </section>

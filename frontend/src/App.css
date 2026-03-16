@@ -93,8 +93,43 @@
   width: min(100% - 3rem, 980px);
   min-height: 640px;
   margin: 0 auto 4rem;
+  padding: 3rem 2.5rem;
   border-radius: 1.5rem;
   background: #6d98d0;
+}
+
+.report-form-shell h3 {
+  margin: 0 0 2rem;
+  color: #111827;
+  font-size: clamp(2rem, 4vw, 2.6rem);
+  font-weight: 800;
+}
+
+.input-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.input-field label {
+  color: #111827;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.input-field input {
+  width: 100%;
+  padding: 1rem 1.2rem;
+  border: 0;
+  border-radius: 0.9rem;
+  background: #ffffff;
+  color: #111827;
+  font-size: 1rem;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.18);
+}
+
+.input-field input::placeholder {
+  color: #9ca3af;
 }
 
 @media (max-width: 768px) {
@@ -110,5 +145,6 @@
     width: calc(100% - 2rem);
     min-height: 480px;
     margin-bottom: 3rem;
+    padding: 2rem 1.25rem;
   }
 }
