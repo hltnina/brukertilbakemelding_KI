@@ -6,6 +6,11 @@ import ReportForm from '../components/ReportForm'
 function Home() {
   const [showAnalysis, setShowAnalysis] = useState(false)
 
+  const scrollToReportSection = () => {
+    const reportSection = document.getElementById('report-section')
+    reportSection?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
   return (
     <>
       <section className="home-hero">
@@ -15,13 +20,17 @@ function Home() {
             Fra tilbakemelding til ferdig GitHub-Issue! Vi analyserer dine filer og
             foreslår konkrete utbedringer.
           </p>
-          <button type="button" className="hero-button">
+          <button
+            type="button"
+            className="hero-button"
+            onClick={scrollToReportSection}
+          >
             Start nå
           </button>
         </div>
       </section>
 
-      <section className="report-section">
+      <section id="report-section" className="report-section">
         <div className="report-intro">
           <h2>Send inn din rapport</h2>
           <p>
