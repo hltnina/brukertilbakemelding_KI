@@ -1,7 +1,7 @@
 import InputField from './InputField'
 import TextAreaField from './TextAreaField'
 
-function ReportForm() {
+function ReportForm({ onSubmit }) {
   return (
     <div className="report-form-shell">
       <h3>Konfigurasjon</h3>
@@ -35,7 +35,7 @@ function ReportForm() {
         </button>
       </div>
 
-      <button type="button" className="submit-button">
+      <button type="button" className="submit-button" onClick={onSubmit}>
         Send inn
       </button>
     </div>

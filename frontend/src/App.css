@@ -223,6 +223,113 @@
   box-shadow: 0 12px 24px rgba(15, 23, 42, 0.24);
 }
 
+.analysis-shell {
+  width: min(100% - 3rem, 980px);
+  min-height: 640px;
+  margin: 0 auto 4rem;
+  padding: 3rem 2.5rem;
+  border-radius: 1.5rem;
+  background: #6d98d0;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.analysis-shell h3 {
+  margin: 0 0 1rem;
+  color: #111827;
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-weight: 800;
+}
+
+.analysis-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.analysis-field label {
+  color: #111827;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.analysis-value-box {
+  width: 100%;
+  padding: 1rem 1.2rem;
+  border-radius: 0.9rem;
+  background: #ffffff;
+  color: #111827;
+  font-size: 1rem;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.18);
+}
+
+.analysis-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.analysis-tag {
+  min-width: 9rem;
+  padding: 0.95rem 1.2rem;
+  border-radius: 0.9rem;
+  background: #ffffff;
+  color: #111827;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.18);
+}
+
+.analysis-text-box {
+  width: 100%;
+  min-height: 240px;
+  padding: 1.5rem 1.6rem;
+  border-radius: 0.9rem;
+  background: #ffffff;
+  color: #111827;
+  font-size: 1rem;
+  line-height: 1.45;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.18);
+}
+
+.analysis-text-box p {
+  margin: 0 0 1.5rem;
+}
+
+.analysis-text-box p:last-child {
+  margin-bottom: 0;
+}
+
+.analysis-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.analysis-edit-button,
+.analysis-submit-button {
+  min-width: 14rem;
+  border: 0;
+  border-radius: 0.9rem;
+  padding: 1rem 2rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.24);
+}
+
+.analysis-edit-button {
+  background: #ffffff;
+  color: #1f3b73;
+}
+
+.analysis-submit-button {
+  background: #1f3b73;
+  color: #f8fafc;
+}
+
 @media (max-width: 768px) {
   .report-intro {
     padding: 4rem 1.25rem 2rem;
@@ -237,6 +344,22 @@
     min-height: 480px;
     margin-bottom: 3rem;
     padding: 2rem 1.25rem;
+  }
+
+  .analysis-shell {
+    width: calc(100% - 2rem);
+    min-height: 480px;
+    margin-bottom: 3rem;
+    padding: 2rem 1.25rem;
+  }
+
+  .analysis-actions {
+    flex-direction: column;
+  }
+
+  .analysis-edit-button,
+  .analysis-submit-button {
+    width: 100%;
   }
 
   .option-buttons {
