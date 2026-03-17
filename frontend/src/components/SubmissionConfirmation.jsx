@@ -15,6 +15,15 @@ function SubmissionConfirmation() {
           ny sak ved å trykke på <strong>“Ny sak”</strong>.
         </p>
       </div>
+
+      <div className="confirmation-actions">
+        <button type="button" className="confirmation-home-button">
+          Ny sak/Hjem
+        </button>
+        <button type="button" className="confirmation-issue-button">
+          Se Github Issue #1
+        </button>
+      </div>
     </div>
   )
 }
