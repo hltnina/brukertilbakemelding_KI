@@ -337,6 +337,9 @@
   padding: 3rem 2.5rem;
   border-radius: 1.5rem;
   background: #6d98d0;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 .confirmation-shell h3 {
@@ -344,6 +347,26 @@
   color: #111827;
   font-size: clamp(2rem, 4vw, 2.8rem);
   font-weight: 800;
+}
+
+.confirmation-message-box {
+  width: 100%;
+  min-height: 220px;
+  padding: 1.8rem 2rem;
+  border-radius: 0.9rem;
+  background: #ffffff;
+  color: #111827;
+  font-size: 1rem;
+  line-height: 1.5;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.18);
+}
+
+.confirmation-message-box p {
+  margin: 0 0 1.5rem;
+}
+
+.confirmation-message-box p:last-child {
+  margin-bottom: 0;
 }
 
 @media (max-width: 768px) {
