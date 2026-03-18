@@ -2,9 +2,10 @@ import { useState } from 'react'
 import AnalysisResult from '../components/AnalysisResult'
 import Footer from '../components/Footer'
 import ReportForm from '../components/ReportForm'
+import SubmissionConfirmation from '../components/SubmissionConfirmation'
 
 function Home() {
-  const [showAnalysis, setShowAnalysis] = useState(false)
+  const [view, setView] = useState('form')
 
   const scrollToReportSection = () => {
     const reportSection = document.getElementById('report-section')
@@ -40,10 +41,17 @@ function Home() {
           </p>
         </div>
 
-        {showAnalysis ? (
-          <AnalysisResult onEdit={() => setShowAnalysis(false)} />
-        ) : (
-          <ReportForm onSubmit={() => setShowAnalysis(true)} />
+        {view === 'form' && <ReportForm onSubmit={() => setView('analysis')} />}
+
+        {view === 'analysis' && (
+          <AnalysisResult
+            onEdit={() => setView('form')}
+            onSubmit={() => setView('confirmation')}
+          />
+        )}
+
+        {view === 'confirmation' && (
+          <SubmissionConfirmation onReset={() => setView('form')} />
         )}
 
         <Footer />
