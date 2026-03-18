@@ -1,13 +1,22 @@
 import { useState } from 'react'
 import AnalysisResult from '../components/AnalysisResult'
 import Footer from '../components/Footer'
+import Navbar from '../components/Navbar'
 import ReportForm from '../components/ReportForm'
+import SubmissionConfirmation from '../components/SubmissionConfirmation'
 
 function Home() {
-  const [showAnalysis, setShowAnalysis] = useState(false)
+  const [view, setView] = useState('form')
+
+  const scrollToReportSection = () => {
+    const reportSection = document.getElementById('report-section')
+    reportSection?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
 
   return (
     <>
+      <Navbar />
+
       <section className="home-hero">
         <div className="hero-inner">
           <h1>Velkommen</h1>
@@ -15,13 +24,17 @@ function Home() {
             Fra tilbakemelding til ferdig GitHub Issue! Vi analyserer dine filer og
             foreslår konkrete utbedringer.
           </p>
-          <button type="button" className="hero-button">
+          <button
+            type="button"
+            className="hero-button"
+            onClick={scrollToReportSection}
+          >
             Start nå
           </button>
         </div>
       </section>
 
-      <section className="report-section">
+      <section id="report-section" className="report-section">
         <div className="report-intro">
           <h2>Send inn din rapport</h2>
           <p>
@@ -31,10 +44,17 @@ function Home() {
           </p>
         </div>
 
-        {showAnalysis ? (
-          <AnalysisResult onEdit={() => setShowAnalysis(false)} />
-        ) : (
-          <ReportForm onSubmit={() => setShowAnalysis(true)} />
+        {view === 'form' && <ReportForm onSubmit={() => setView('analysis')} />}
+
+        {view === 'analysis' && (
+          <AnalysisResult
+            onEdit={() => setView('form')}
+            onSubmit={() => setView('confirmation')}
+          />
+        )}
+
+        {view === 'confirmation' && (
+          <SubmissionConfirmation onReset={() => setView('form')} />
         )}
 
         <Footer />

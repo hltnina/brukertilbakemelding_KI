@@ -1,6 +1,9 @@
 const Footer = () => {
   return (
-    <footer className="w-full bg-gray-100 px-6 py-12">
+    <footer
+      id="contact-section"
+      className="w-full bg-gray-100 px-6 py-12"
+    >
       <div className="mx-auto flex max-w-3xl items-start justify-center gap-6 text-slate-900">
         <div className="flex h-12 w-12 items-center justify-center rounded-md bg-sky-100 text-xs font-semibold text-sky-900">
           G03
