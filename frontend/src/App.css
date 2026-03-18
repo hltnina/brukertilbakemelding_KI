@@ -318,6 +318,7 @@
   color: #111827;
   font-size: 0.95rem;
   font-weight: 500;
+}
 
 .upload-icon {
   width: 1.2rem;
@@ -461,6 +462,8 @@
 .analysis-submit-button:hover {
   background: #162b57;
   transform: translateY(-1px);
+}
+
 .confirmation-shell {
   width: min(100% - 3rem, 980px);
   min-height: 640px;
