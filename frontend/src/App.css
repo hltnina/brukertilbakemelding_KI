@@ -197,6 +197,10 @@
 }
 
 .upload-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
   width: fit-content;
   min-width: 10rem;
   border: 0;
@@ -207,6 +211,13 @@
   font-size: 1rem;
   font-weight: 500;
   box-shadow: 0 8px 20px rgba(15, 23, 42, 0.18);
+}
+
+
+.upload-icon {
+  width: 1.2rem;
+  height: 1.2rem;
+  flex-shrink: 0;
 }
 
 .submit-button {
