@@ -280,6 +280,10 @@
   gap: 1rem;
 }
 
+.upload-input {
+  display: none;
+}
+
 .upload-group p {
   margin: 0;
   color: #111827;
@@ -310,6 +314,10 @@
   transform: translateY(-1px);
 }
 
+.upload-file-name {
+  color: #111827;
+  font-size: 0.95rem;
+  font-weight: 500;
 
 .upload-icon {
   width: 1.2rem;
@@ -432,6 +440,7 @@
   font-size: 1.05rem;
   font-weight: 700;
   box-shadow: 0 12px 24px rgba(15, 23, 42, 0.24);
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 .analysis-edit-button {
@@ -439,11 +448,19 @@
   color: #1f3b73;
 }
 
+.analysis-edit-button:hover {
+  background: #e5e7eb;
+  transform: translateY(-1px);
+}
+
 .analysis-submit-button {
   background: #1f3b73;
   color: #f8fafc;
 }
 
+.analysis-submit-button:hover {
+  background: #162b57;
+  transform: translateY(-1px);
 .confirmation-shell {
   width: min(100% - 3rem, 980px);
   min-height: 640px;

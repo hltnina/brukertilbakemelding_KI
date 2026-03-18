@@ -1,7 +1,20 @@
+import { useRef, useState } from 'react'
 import InputField from './InputField'
 import TextAreaField from './TextAreaField'
 
 function ReportForm({ onSubmit }) {
+  const fileInputRef = useRef(null)
+  const [selectedFileName, setSelectedFileName] = useState('')
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleFileChange = (event) => {
+    const file = event.target.files?.[0]
+    setSelectedFileName(file ? file.name : '')
+  }
+
   return (
     <div className="report-form-shell">
       <h3>Konfigurasjon</h3>
@@ -30,7 +43,18 @@ function ReportForm({ onSubmit }) {
 
       <div className="upload-group">
         <p>Last opp vedlegg (i form av fil, bilde eller video)*</p>
-        <button type="button" className="upload-button">
+        <input
+          ref={fileInputRef}
+          type="file"
+          className="upload-input"
+          accept="image/*,video/*,.pdf,.doc,.docx,.txt"
+          onChange={handleFileChange}
+        />
+        <button
+          type="button"
+          className="upload-button"
+          onClick={handleUploadClick}
+        >
           Last opp
           <svg
             className="upload-icon"
@@ -48,6 +72,9 @@ function ReportForm({ onSubmit }) {
             />
           </svg>
         </button>
+        {selectedFileName ? (
+          <span className="upload-file-name">Valgt fil: {selectedFileName}</span>
+        ) : null}
       </div>
 
       <button type="button" className="submit-button" onClick={onSubmit}>
