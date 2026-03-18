@@ -292,6 +292,10 @@
 }
 
 .upload-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
   width: fit-content;
   min-width: 10rem;
   border: 0;
@@ -314,6 +318,11 @@
   color: #111827;
   font-size: 0.95rem;
   font-weight: 500;
+
+.upload-icon {
+  width: 1.2rem;
+  height: 1.2rem;
+  flex-shrink: 0;
 }
 
 .submit-button {
@@ -452,6 +461,71 @@
 .analysis-submit-button:hover {
   background: #162b57;
   transform: translateY(-1px);
+.confirmation-shell {
+  width: min(100% - 3rem, 980px);
+  min-height: 640px;
+  margin: 0 auto 4rem;
+  padding: 3rem 2.5rem;
+  border-radius: 1.5rem;
+  background: #6d98d0;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.confirmation-shell h3 {
+  margin: 0;
+  color: #111827;
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-weight: 800;
+}
+
+.confirmation-message-box {
+  width: 100%;
+  min-height: 220px;
+  padding: 1.8rem 2rem;
+  border-radius: 0.9rem;
+  background: #ffffff;
+  color: #111827;
+  font-size: 1rem;
+  line-height: 1.5;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.18);
+}
+
+.confirmation-message-box p {
+  margin: 0 0 1.5rem;
+}
+
+.confirmation-message-box p:last-child {
+  margin-bottom: 0;
+}
+
+.confirmation-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.confirmation-home-button,
+.confirmation-issue-button {
+  min-width: 14rem;
+  border: 0;
+  border-radius: 0.9rem;
+  padding: 1rem 2rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.24);
+}
+
+.confirmation-home-button {
+  background: #ffffff;
+  color: #1f3b73;
+}
+
+.confirmation-issue-button {
+  background: #1f3b73;
+  color: #f8fafc;
 }
 
 @media (max-width: 768px) {
@@ -477,12 +551,25 @@
     padding: 2rem 1.25rem;
   }
 
+  .confirmation-shell {
+    width: calc(100% - 2rem);
+    min-height: 480px;
+    margin-bottom: 3rem;
+    padding: 2rem 1.25rem;
+  }
+
   .analysis-actions {
     flex-direction: column;
   }
 
+  .confirmation-actions {
+    flex-direction: column;
+  }
+
   .analysis-edit-button,
-  .analysis-submit-button {
+  .analysis-submit-button,
+  .confirmation-home-button,
+  .confirmation-issue-button {
     width: 100%;
   }
 

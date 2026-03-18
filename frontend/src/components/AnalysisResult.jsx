@@ -1,4 +1,4 @@
-function AnalysisResult({ onEdit }) {
+function AnalysisResult({ onEdit, onSubmit }) {
   return (
     <div className="analysis-shell">
       <h3>Generert analyse</h3>
@@ -53,7 +53,11 @@ function AnalysisResult({ onEdit }) {
         <button type="button" className="analysis-edit-button" onClick={onEdit}>
           Rediger
         </button>
-        <button type="button" className="analysis-submit-button">
+        <button
+          type="button"
+          className="analysis-submit-button"
+          onClick={onSubmit}
+        >
           Send inn
         </button>
       </div>
