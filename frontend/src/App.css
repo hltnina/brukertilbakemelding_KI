@@ -280,6 +280,10 @@
   gap: 1rem;
 }
 
+.upload-input {
+  display: none;
+}
+
 .upload-group p {
   margin: 0;
   color: #111827;
@@ -304,6 +308,12 @@
 .upload-button:hover {
   background: #e5e7eb;
   transform: translateY(-1px);
+}
+
+.upload-file-name {
+  color: #111827;
+  font-size: 0.95rem;
+  font-weight: 500;
 }
 
 .submit-button {
