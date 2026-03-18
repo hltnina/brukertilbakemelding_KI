@@ -1,7 +1,66 @@
 .home-hero {
   min-height: 100vh;
-  padding: 2rem;
+  padding: 8.5rem 2rem 2rem;
   background: #234f8d;
+}
+
+.site-navbar {
+  position: fixed;
+  top: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  width: min(calc(100% - 2.5rem), 1400px);
+  padding: 1.15rem 1.8rem;
+  border-radius: 1.15rem;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 10px 24px rgba(8, 24, 53, 0.24);
+  backdrop-filter: blur(10px);
+}
+
+.navbar-brand {
+  display: inline-flex;
+  align-items: center;
+  color: #111827;
+  text-decoration: none;
+}
+
+.navbar-brand-text {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.navbar-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.navbar-pill {
+  min-width: 6.6rem;
+  padding: 0.45rem 1.25rem;
+  border: 1px solid #cfcfcf;
+  border-radius: 999px;
+  background: #fcfcfc;
+  color: #222222;
+  font-size: 0.95rem;
+  line-height: 1;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.2s ease, transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.navbar-pill:hover,
+.navbar-pill.active {
+  background: #eef2f7;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.12);
+  transform: translateY(-1px);
 }
 
 .hero-inner {
@@ -11,7 +70,7 @@
   justify-content: center;
   gap: 1.5rem;
   max-width: 960px;
-  min-height: calc(100vh - 4rem);
+  min-height: calc(100vh - 12rem);
   margin: 0 auto;
   text-align: center;
   color: #f5f7fb;
@@ -46,11 +105,31 @@
 
 @media (max-width: 768px) {
   .home-hero {
-    padding: 1.25rem;
+    padding: 8rem 1.25rem 1.25rem;
+  }
+
+  .site-navbar {
+    flex-direction: column;
+    align-items: stretch;
+    top: 0.75rem;
+    padding: 1rem;
+  }
+
+  .navbar-brand {
+    justify-content: center;
+  }
+
+  .navbar-links {
+    gap: 0.85rem;
+  }
+
+  .navbar-pill {
+    min-width: 0;
+    flex: 1 1 8rem;
   }
 
   .hero-inner {
-    min-height: calc(100vh - 2.5rem);
+    min-height: calc(100vh - 9rem);
   }
 
   .hero-button {
