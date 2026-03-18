@@ -96,11 +96,17 @@
   padding: 1rem 2rem;
   border: 0;
   border-radius: 1rem;
-  background: #ececec;
+  background: #d9dde4;
   color: #234f8d;
   font-size: 1.4rem;
   font-weight: 700;
   box-shadow: 0 12px 24px rgba(8, 24, 53, 0.22);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.hero-button:hover {
+  background: #cfd5dd;
+  transform: translateY(-1px);
 }
 
 @media (max-width: 768px) {
@@ -323,6 +329,12 @@
   font-size: 1.05rem;
   font-weight: 700;
   box-shadow: 0 12px 24px rgba(15, 23, 42, 0.24);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.submit-button:hover {
+  background: #162b57;
+  transform: translateY(-1px);
 }
 
 .analysis-shell {
