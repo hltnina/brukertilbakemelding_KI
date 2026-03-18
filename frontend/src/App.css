@@ -203,6 +203,10 @@
 }
 
 .upload-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
   width: fit-content;
   min-width: 10rem;
   border: 0;
@@ -219,6 +223,13 @@
 .upload-button:hover {
   background: #e5e7eb;
   transform: translateY(-1px);
+}
+
+
+.upload-icon {
+  width: 1.2rem;
+  height: 1.2rem;
+  flex-shrink: 0;
 }
 
 .submit-button {

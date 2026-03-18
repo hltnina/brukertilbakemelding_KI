@@ -32,6 +32,21 @@ function ReportForm({ onSubmit }) {
         <p>Last opp vedlegg (i form av fil, bilde eller video)*</p>
         <button type="button" className="upload-button">
           Last opp
+          <svg
+            className="upload-icon"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M12 16V4M12 4L7 9M12 4L17 9M5 15L5 18C5 19.1046 5.89543 20 7 20H17C18.1046 20 19 19.1046 19 18V15"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
         </button>
       </div>
 
