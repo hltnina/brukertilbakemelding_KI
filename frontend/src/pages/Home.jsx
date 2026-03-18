@@ -1,6 +1,63 @@
-// Home.jsx
+import { useState } from 'react'
+import AnalysisResult from '../components/AnalysisResult'
+import Footer from '../components/Footer'
+import ReportForm from '../components/ReportForm'
+import SubmissionConfirmation from '../components/SubmissionConfirmation'
+
 function Home() {
-  return <h1>Welcome to the SPA Home Page!</h1>
+  const [view, setView] = useState('form')
+
+  const scrollToReportSection = () => {
+    const reportSection = document.getElementById('report-section')
+    reportSection?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  return (
+    <>
+      <section className="home-hero">
+        <div className="hero-inner">
+          <h1>Velkommen</h1>
+          <p>
+            Fra tilbakemelding til ferdig GitHub-Issue! Vi analyserer dine filer og
+            foreslår konkrete utbedringer.
+          </p>
+          <button
+            type="button"
+            className="hero-button"
+            onClick={scrollToReportSection}
+          >
+            Start nå
+          </button>
+        </div>
+      </section>
+
+      <section id="report-section" className="report-section">
+        <div className="report-intro">
+          <h2>Send inn din rapport</h2>
+          <p>
+            Beskriv problemet eller velg en prompt-mal. Last opp vedlegg og send
+            inn for umiddelbare svar. Se gjennom og send deretter direkte til
+            Github issues.
+          </p>
+        </div>
+
+        {view === 'form' && <ReportForm onSubmit={() => setView('analysis')} />}
+
+        {view === 'analysis' && (
+          <AnalysisResult
+            onEdit={() => setView('form')}
+            onSubmit={() => setView('confirmation')}
+          />
+        )}
+
+        {view === 'confirmation' && (
+          <SubmissionConfirmation onReset={() => setView('form')} />
+        )}
+
+        <Footer />
+      </section>
+    </>
+  )
 }
 
 export default Home
