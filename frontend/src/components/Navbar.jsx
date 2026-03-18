@@ -23,7 +23,7 @@ function Navbar() {
           Kontakt
         </a>
         <a
-          href="https://github.com/hltnina/brukertilbakemelding_KI"
+          href="https://github.com/hltnina/brukertilbakemelding_KI/issues"
           className="navbar-pill"
           target="_blank"
           rel="noreferrer"
