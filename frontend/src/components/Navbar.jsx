@@ -11,9 +11,14 @@ function Navbar() {
         <NavLink to="/" className="navbar-pill">
           Hjem
         </NavLink>
-        <NavLink to="/about" className="navbar-pill">
+        <a
+          href="https://sites.google.com/view/bachelorgruppe3/hjem"
+          className="navbar-pill"
+          target="_blank"
+          rel="noreferrer"
+        >
           Om oss
-        </NavLink>
+        </a>
         <a href="#contact-section" className="navbar-pill">
           Kontakt
         </a>
