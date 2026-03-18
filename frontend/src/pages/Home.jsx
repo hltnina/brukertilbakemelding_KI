@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import AnalysisResult from '../components/AnalysisResult'
 import Footer from '../components/Footer'
+import Navbar from '../components/Navbar'
 import ReportForm from '../components/ReportForm'
 
 function Home() {
@@ -13,6 +14,8 @@ function Home() {
 
   return (
     <>
+      <Navbar />
+
       <section className="home-hero">
         <div className="hero-inner">
           <h1>Velkommen</h1>
