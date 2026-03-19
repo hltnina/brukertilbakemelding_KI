@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import AnalysisResult from '../components/AnalysisResult'
 import Footer from '../components/Footer'
 import Navbar from '../components/Navbar'
@@ -55,6 +55,11 @@ function Home() {
     setCreatedGithubIssues([])
     setView('form')
   }
+
+  useEffect(() => {
+    const reportSection = document.getElementById('report-section')
+    reportSection?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [view])
 
   return (
     <>
