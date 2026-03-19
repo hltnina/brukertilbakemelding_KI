@@ -118,11 +118,15 @@ function AnalysisResult({ issues, onEdit, onSubmitSingle, onSubmitAll }) {
 
       {submittedIssues.length > 0 ? (
         <div className="analysis-submitted-list">
+          <h4>Sendte problemer</h4>
           {submittedIssues.map((issue) => (
             <div key={issue.id} className="analysis-inline-confirmation">
-              Problem {getOriginalIssueNumber(issue.id)}:{' '}
-              <strong>{issue.title || 'Uten tittel'}</strong> er markert som sendt
-              inn.
+              <span className="analysis-inline-confirmation-badge">Sendt</span>
+              <span>
+                Problem {getOriginalIssueNumber(issue.id)}:{' '}
+                <strong>{issue.title || 'Uten tittel'}</strong> er markert som
+                sendt inn.
+              </span>
             </div>
           ))}
         </div>
