@@ -1,6 +1,6 @@
 import { Link, NavLink } from 'react-router-dom'
 
-function Navbar() {
+function Navbar({ onContactClick }) {
   return (
     <nav className="site-navbar" aria-label="Hovednavigasjon">
       <Link to="/" className="navbar-brand" aria-label="Gå til forsiden">
@@ -19,9 +19,13 @@ function Navbar() {
         >
           Om oss
         </a>
-        <a href="#contact-section" className="navbar-pill">
+        <button
+          type="button"
+          className="navbar-pill"
+          onClick={onContactClick}
+        >
           Kontakt
-        </a>
+        </button>
         <a
           href="https://github.com/hltnina/brukertilbakemelding_KI/issues"
           className="navbar-pill"
