@@ -3,15 +3,14 @@ import InputField from './InputField'
 import TextAreaField from './TextAreaField'
 
 const createEmptyIssue = (index) => ({
-  id: `issue-${index}`,
+  id: `issue-${index}-${Date.now()}`,
   title: '',
   description: '',
 })
 
-function ReportForm({ onSubmit }) {
+function ReportForm({ issues, setIssues, onSubmit }) {
   const fileInputRef = useRef(null)
   const [selectedFileName, setSelectedFileName] = useState('')
-  const [issues, setIssues] = useState([createEmptyIssue(1)])
 
   const handleUploadClick = () => {
     fileInputRef.current?.click()
@@ -149,7 +148,11 @@ function ReportForm({ onSubmit }) {
         ) : null}
       </div>
 
-      <button type="button" className="submit-button" onClick={onSubmit}>
+      <button
+        type="button"
+        className="submit-button"
+        onClick={() => onSubmit(issues)}
+      >
         Send inn
       </button>
     </div>

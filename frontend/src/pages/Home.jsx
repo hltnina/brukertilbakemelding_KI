@@ -5,12 +5,24 @@ import Navbar from '../components/Navbar'
 import ReportForm from '../components/ReportForm'
 import SubmissionConfirmation from '../components/SubmissionConfirmation'
 
+const createEmptyIssue = (index) => ({
+  id: `issue-${index}-${Date.now()}`,
+  title: '',
+  description: '',
+})
+
 function Home() {
   const [view, setView] = useState('form')
+  const [issues, setIssues] = useState([createEmptyIssue(1)])
 
   const scrollToReportSection = () => {
     const reportSection = document.getElementById('report-section')
     reportSection?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  const handleFormSubmit = (submittedIssues) => {
+    setIssues(submittedIssues)
+    setView('analysis')
   }
 
   return (
@@ -44,10 +56,17 @@ function Home() {
           </p>
         </div>
 
-        {view === 'form' && <ReportForm onSubmit={() => setView('analysis')} />}
+        {view === 'form' && (
+          <ReportForm
+            issues={issues}
+            setIssues={setIssues}
+            onSubmit={handleFormSubmit}
+          />
+        )}
 
         {view === 'analysis' && (
           <AnalysisResult
+            issues={issues}
             onEdit={() => setView('form')}
             onSubmit={() => setView('confirmation')}
           />
