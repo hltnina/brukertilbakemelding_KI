@@ -109,7 +109,7 @@ function ContactModal({ isOpen, onClose }) {
 
           {sendState === 'sent' ? (
             <p className="contact-modal-notice">
-              Meldingen er klargjort med avsenderadresse. Hvis dere vil, kan vi
+              Meldingen er klargjort med avsenderadresse. Hvis du vil, kan jeg
               koble denne boksen til faktisk e-postsending i neste steg.
             </p>
           ) : null}
