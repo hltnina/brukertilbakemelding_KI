@@ -17,6 +17,7 @@ function Home() {
   const [submissionMode, setSubmissionMode] = useState('single')
   const [submittedIssue, setSubmittedIssue] = useState(null)
   const [submittedIssues, setSubmittedIssues] = useState([])
+  const [createdGithubIssues, setCreatedGithubIssues] = useState([])
 
   const scrollToReportSection = () => {
     const reportSection = document.getElementById('report-section')
@@ -34,9 +35,16 @@ function Home() {
   }
 
   const handleAllSubmissions = (allSubmittedIssues) => {
+    const mockGithubIssues = allSubmittedIssues.map((issue, index) => ({
+      ...issue,
+      githubIssueNumber: index + 1,
+      githubIssueUrl: `https://github.com/hltnina/brukertilbakemelding_KI/issues/${index + 1}`,
+    }))
+
     setSubmissionMode('all')
     setSubmittedIssue(null)
     setSubmittedIssues(allSubmittedIssues)
+    setCreatedGithubIssues(mockGithubIssues)
     setView('confirmation')
   }
 
@@ -44,6 +52,7 @@ function Home() {
     setSubmissionMode('single')
     setSubmittedIssue(null)
     setSubmittedIssues([])
+    setCreatedGithubIssues([])
     setView('form')
   }
 
@@ -101,6 +110,7 @@ function Home() {
             submissionMode={submissionMode}
             submittedIssue={submittedIssue}
             submittedIssues={submittedIssues}
+            createdGithubIssues={createdGithubIssues}
           />
         )}
 

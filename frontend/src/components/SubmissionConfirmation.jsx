@@ -3,6 +3,7 @@ function SubmissionConfirmation({
   submissionMode,
   submittedIssue,
   submittedIssues,
+  createdGithubIssues,
 }) {
   const isBulkSubmission = submissionMode === 'all'
   const issueTitle = submittedIssue?.title?.trim() || 'den valgte saken'
@@ -19,22 +20,31 @@ function SubmissionConfirmation({
             </p>
 
             <p>
-              Se sakene i Github Issues ved å trykke på{' '}
-              <strong>“Se Github Issue #1”</strong>, eller start en ny analyse
+              Se de opprettede Github-sakene under, eller start en ny analyse
               ved å trykke på <strong>“Ny sak”</strong>.
             </p>
 
-            {submittedIssues?.length ? (
+            {createdGithubIssues?.length ? (
               <div className="confirmation-issue-list">
-                {submittedIssues.map((issue, index) => (
+                {createdGithubIssues.map((issue, index) => (
                   <div key={issue.id} className="confirmation-issue-item">
-                    <span className="confirmation-issue-badge">
-                      Problem {index + 1}
-                    </span>
-                    <span>
-                      <strong>{issue.title || 'Uten tittel'}</strong> er sendt
-                      inn til Github Issues.
-                    </span>
+                    <div className="confirmation-issue-copy">
+                      <span className="confirmation-issue-badge">
+                        Problem {index + 1}
+                      </span>
+                      <span>
+                        <strong>{issue.title || 'Uten tittel'}</strong> er sendt
+                        inn som <strong>Github Issue #{issue.githubIssueNumber}</strong>.
+                      </span>
+                    </div>
+                    <a
+                      className="confirmation-issue-link"
+                      href={issue.githubIssueUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Se issue #{issue.githubIssueNumber}
+                    </a>
                   </div>
                 ))}
               </div>
@@ -64,9 +74,11 @@ function SubmissionConfirmation({
         >
           Ny sak/Hjem
         </button>
-        <button type="button" className="confirmation-issue-button">
-          Se Github Issue #1
-        </button>
+        {!isBulkSubmission ? (
+          <button type="button" className="confirmation-issue-button">
+            Se Github Issue #1
+          </button>
+        ) : null}
       </div>
     </div>
   )
