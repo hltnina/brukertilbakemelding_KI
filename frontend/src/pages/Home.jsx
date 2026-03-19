@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import AnalysisResult from '../components/AnalysisResult'
+import ContactModal from '../components/ContactModal'
 import Footer from '../components/Footer'
 import Navbar from '../components/Navbar'
 import ReportForm from '../components/ReportForm'
@@ -13,6 +14,7 @@ const createEmptyIssue = (index) => ({
 
 function Home() {
   const [view, setView] = useState('form')
+  const [isContactOpen, setIsContactOpen] = useState(false)
   const [issues, setIssues] = useState([createEmptyIssue(1)])
   const [submissionMode, setSubmissionMode] = useState('single')
   const [submittedIssue, setSubmittedIssue] = useState(null)
@@ -63,7 +65,11 @@ function Home() {
 
   return (
     <>
-      <Navbar />
+      <Navbar onContactClick={() => setIsContactOpen(true)} />
+      <ContactModal
+        isOpen={isContactOpen}
+        onClose={() => setIsContactOpen(false)}
+      />
 
       <section className="home-hero">
         <div className="hero-inner">
