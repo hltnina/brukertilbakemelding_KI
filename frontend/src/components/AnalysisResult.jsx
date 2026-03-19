@@ -33,16 +33,16 @@ function AnalysisResult({ issues, onEdit, onSubmitSingle, onSubmitAll }) {
 
       {visibleIssues.length > 0 ? (
         <div className="analysis-list">
-          {visibleIssues.map((issue, index) => (
+          {visibleIssues.map((issue) => (
             <article key={issue.id} className="analysis-card">
               <div className="analysis-card-header">
-                <h4>Problem {index + 1}</h4>
+                <h4>Problem {getOriginalIssueNumber(issue.id)}</h4>
               </div>
 
               <div className="analysis-field">
                 <label>Tittel på sak</label>
                 <div className="analysis-value-box">
-                  {issue.title || `Problem ${index + 1}`}
+                  {issue.title || `Problem ${getOriginalIssueNumber(issue.id)}`}
                 </div>
               </div>
 
@@ -60,8 +60,11 @@ function AnalysisResult({ issues, onEdit, onSubmitSingle, onSubmitAll }) {
                   <p>
                     Denne seksjonen presenterer en intelligent analyse generert
                     av KI-tjenesten, som ser sammenhengen mellom beskrivelsen av{' '}
-                    <strong>{issue.title || `problem ${index + 1}`}</strong> og
-                    innholdet i vedlagte filer, bilder eller videoer.
+                    <strong>
+                      {issue.title ||
+                        `problem ${getOriginalIssueNumber(issue.id)}`}
+                    </strong>{' '}
+                    og innholdet i vedlagte filer, bilder eller videoer.
                   </p>
                   <p>
                     Systemet kategoriserer automatisk tilbakemeldingen etter
@@ -115,11 +118,15 @@ function AnalysisResult({ issues, onEdit, onSubmitSingle, onSubmitAll }) {
 
       {submittedIssues.length > 0 ? (
         <div className="analysis-submitted-list">
+          <h4>Sendte problemer</h4>
           {submittedIssues.map((issue) => (
             <div key={issue.id} className="analysis-inline-confirmation">
-              Problem {getOriginalIssueNumber(issue.id)}:{' '}
-              <strong>{issue.title || 'Uten tittel'}</strong> er markert som sendt
-              inn.
+              <span className="analysis-inline-confirmation-badge">Sendt</span>
+              <span>
+                Problem {getOriginalIssueNumber(issue.id)}:{' '}
+                <strong>{issue.title || 'Uten tittel'}</strong> er markert som
+                sendt inn.
+              </span>
             </div>
           ))}
         </div>
@@ -130,7 +137,7 @@ function AnalysisResult({ issues, onEdit, onSubmitSingle, onSubmitAll }) {
           <button
             type="button"
             className="analysis-submit-button"
-            onClick={onSubmitAll}
+            onClick={() => onSubmitAll(issues)}
           >
             Send inn alle
           </button>
