@@ -1,4 +1,9 @@
-function SubmissionConfirmation({ onReset, submissionMode, submittedIssue }) {
+function SubmissionConfirmation({
+  onReset,
+  submissionMode,
+  submittedIssue,
+  submittedIssues,
+}) {
   const isBulkSubmission = submissionMode === 'all'
   const issueTitle = submittedIssue?.title?.trim() || 'den valgte saken'
 
@@ -18,6 +23,22 @@ function SubmissionConfirmation({ onReset, submissionMode, submittedIssue }) {
               <strong>“Se Github Issue #1”</strong>, eller start en ny analyse
               ved å trykke på <strong>“Ny sak”</strong>.
             </p>
+
+            {submittedIssues?.length ? (
+              <div className="confirmation-issue-list">
+                {submittedIssues.map((issue, index) => (
+                  <div key={issue.id} className="confirmation-issue-item">
+                    <span className="confirmation-issue-badge">
+                      Problem {index + 1}
+                    </span>
+                    <span>
+                      <strong>{issue.title || 'Uten tittel'}</strong> er sendt
+                      inn til Github Issues.
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : null}
           </>
         ) : (
           <>

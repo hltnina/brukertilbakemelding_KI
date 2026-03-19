@@ -137,7 +137,7 @@ function AnalysisResult({ issues, onEdit, onSubmitSingle, onSubmitAll }) {
           <button
             type="button"
             className="analysis-submit-button"
-            onClick={onSubmitAll}
+            onClick={() => onSubmitAll(issues)}
           >
             Send inn alle
           </button>

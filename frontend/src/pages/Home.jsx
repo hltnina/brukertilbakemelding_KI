@@ -16,6 +16,7 @@ function Home() {
   const [issues, setIssues] = useState([createEmptyIssue(1)])
   const [submissionMode, setSubmissionMode] = useState('single')
   const [submittedIssue, setSubmittedIssue] = useState(null)
+  const [submittedIssues, setSubmittedIssues] = useState([])
 
   const scrollToReportSection = () => {
     const reportSection = document.getElementById('report-section')
@@ -32,15 +33,17 @@ function Home() {
     setSubmittedIssue(issue)
   }
 
-  const handleAllSubmissions = () => {
+  const handleAllSubmissions = (allSubmittedIssues) => {
     setSubmissionMode('all')
     setSubmittedIssue(null)
+    setSubmittedIssues(allSubmittedIssues)
     setView('confirmation')
   }
 
   const handleReset = () => {
     setSubmissionMode('single')
     setSubmittedIssue(null)
+    setSubmittedIssues([])
     setView('form')
   }
 
@@ -97,6 +100,7 @@ function Home() {
             onReset={handleReset}
             submissionMode={submissionMode}
             submittedIssue={submittedIssue}
+            submittedIssues={submittedIssues}
           />
         )}
 
