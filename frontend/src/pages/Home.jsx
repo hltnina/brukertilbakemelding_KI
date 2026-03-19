@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import AnalysisResult from '../components/AnalysisResult'
+import ContactModal from '../components/ContactModal'
 import Footer from '../components/Footer'
 import Navbar from '../components/Navbar'
 import ReportForm from '../components/ReportForm'
@@ -7,6 +8,7 @@ import SubmissionConfirmation from '../components/SubmissionConfirmation'
 
 function Home() {
   const [view, setView] = useState('form')
+  const [isContactOpen, setIsContactOpen] = useState(false)
 
   const scrollToReportSection = () => {
     const reportSection = document.getElementById('report-section')
@@ -15,7 +17,11 @@ function Home() {
 
   return (
     <>
-      <Navbar />
+      <Navbar onContactClick={() => setIsContactOpen(true)} />
+      <ContactModal
+        isOpen={isContactOpen}
+        onClose={() => setIsContactOpen(false)}
+      />
 
       <section className="home-hero">
         <div className="hero-inner">
