@@ -1,22 +1,107 @@
+import { useRef, useState } from 'react'
 import InputField from './InputField'
 import TextAreaField from './TextAreaField'
 
+const createEmptyIssue = (index) => ({
+  id: `issue-${index}`,
+  title: '',
+  description: '',
+})
+
 function ReportForm({ onSubmit }) {
+  const fileInputRef = useRef(null)
+  const [selectedFileName, setSelectedFileName] = useState('')
+  const [issues, setIssues] = useState([createEmptyIssue(1)])
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleFileChange = (event) => {
+    const file = event.target.files?.[0]
+    setSelectedFileName(file ? file.name : '')
+  }
+
+  const handleIssueChange = (issueId, field, value) => {
+    setIssues((currentIssues) =>
+      currentIssues.map((issue) =>
+        issue.id === issueId ? { ...issue, [field]: value } : issue
+      )
+    )
+  }
+
+  const handleAddIssue = () => {
+    setIssues((currentIssues) => [
+      ...currentIssues,
+      createEmptyIssue(currentIssues.length + 1),
+    ])
+  }
+
+  const handleRemoveIssue = (issueId) => {
+    setIssues((currentIssues) =>
+      currentIssues.filter((issue) => issue.id !== issueId)
+    )
+  }
+
   return (
     <div className="report-form-shell">
       <h3>Konfigurasjon</h3>
 
-      <InputField
-        label="Tittel på sak*"
-        id="report-title"
-        placeholder="Tittel på sak..."
-      />
+      <div className="issue-list">
+        {issues.map((issue, index) => (
+          <section key={issue.id} className="issue-card">
+            <div className="issue-card-header">
+              <h4>Problem {index + 1}</h4>
+              {issues.length > 1 ? (
+                <button
+                  type="button"
+                  className="remove-issue-button"
+                  onClick={() => handleRemoveIssue(issue.id)}
+                >
+                  Fjern
+                </button>
+              ) : null}
+            </div>
 
-      <TextAreaField
-        label="Problembeskrivelse*"
-        id="report-description"
-        placeholder="Legg inn din beskrivelse..."
-      />
+            <InputField
+              label="Tittel på sak*"
+              id={`report-title-${issue.id}`}
+              placeholder="Tittel på sak..."
+              value={issue.title}
+              onChange={(event) =>
+                handleIssueChange(issue.id, 'title', event.target.value)
+              }
+            />
+
+            <TextAreaField
+              label="Problembeskrivelse*"
+              id={`report-description-${issue.id}`}
+              placeholder="Legg inn din beskrivelse..."
+              value={issue.description}
+              onChange={(event) =>
+                handleIssueChange(issue.id, 'description', event.target.value)
+              }
+            />
+          </section>
+        ))}
+
+        <div className="add-issue-panel">
+          <p>
+            Har du funnet flere problemer? Trykk på + for å legge
+            til flere problemer.
+          </p>
+          <button
+            type="button"
+            className="add-issue-button"
+            onClick={handleAddIssue}
+          >
+            <span className="add-issue-icon" aria-hidden="true">
+              +
+            </span>
+            Legg til et nytt problem
+          </button>
+        </div>
+      </div>
 
       <div className="option-group">
         <p>Eller velg et av følgende alternativ</p>
@@ -30,7 +115,18 @@ function ReportForm({ onSubmit }) {
 
       <div className="upload-group">
         <p>Last opp vedlegg (i form av fil, bilde eller video)*</p>
-        <button type="button" className="upload-button">
+        <input
+          ref={fileInputRef}
+          type="file"
+          className="upload-input"
+          accept="image/*,video/*,.pdf,.doc,.docx,.txt"
+          onChange={handleFileChange}
+        />
+        <button
+          type="button"
+          className="upload-button"
+          onClick={handleUploadClick}
+        >
           Last opp
           <svg
             className="upload-icon"
@@ -48,6 +144,9 @@ function ReportForm({ onSubmit }) {
             />
           </svg>
         </button>
+        {selectedFileName ? (
+          <span className="upload-file-name">Valgt fil: {selectedFileName}</span>
+        ) : null}
       </div>
 
       <button type="button" className="submit-button" onClick={onSubmit}>

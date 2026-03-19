@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import AnalysisResult from '../components/AnalysisResult'
 import Footer from '../components/Footer'
+import Navbar from '../components/Navbar'
 import ReportForm from '../components/ReportForm'
 import SubmissionConfirmation from '../components/SubmissionConfirmation'
 
@@ -14,11 +15,13 @@ function Home() {
 
   return (
     <>
+      <Navbar />
+
       <section className="home-hero">
         <div className="hero-inner">
           <h1>Velkommen</h1>
           <p>
-            Fra tilbakemelding til ferdig GitHub-Issue! Vi analyserer dine filer og
+            Fra tilbakemelding til ferdig GitHub Issue! Vi analyserer dine filer og
             foreslår konkrete utbedringer.
           </p>
           <button
