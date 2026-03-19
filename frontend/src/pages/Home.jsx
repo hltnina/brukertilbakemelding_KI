@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import AnalysisResult from '../components/AnalysisResult'
 import ContactModal from '../components/ContactModal'
 import Footer from '../components/Footer'
@@ -6,14 +6,62 @@ import Navbar from '../components/Navbar'
 import ReportForm from '../components/ReportForm'
 import SubmissionConfirmation from '../components/SubmissionConfirmation'
 
+const createEmptyIssue = (index) => ({
+  id: `issue-${index}-${Date.now()}`,
+  title: '',
+  description: '',
+})
+
 function Home() {
   const [view, setView] = useState('form')
   const [isContactOpen, setIsContactOpen] = useState(false)
+  const [issues, setIssues] = useState([createEmptyIssue(1)])
+  const [submissionMode, setSubmissionMode] = useState('single')
+  const [submittedIssue, setSubmittedIssue] = useState(null)
+  const [submittedIssues, setSubmittedIssues] = useState([])
+  const [createdGithubIssues, setCreatedGithubIssues] = useState([])
 
   const scrollToReportSection = () => {
     const reportSection = document.getElementById('report-section')
     reportSection?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
+
+  const handleFormSubmit = (submittedIssues) => {
+    setIssues(submittedIssues)
+    setView('analysis')
+  }
+
+  const handleSingleSubmission = (issue) => {
+    setSubmissionMode('single')
+    setSubmittedIssue(issue)
+  }
+
+  const handleAllSubmissions = (allSubmittedIssues) => {
+    const mockGithubIssues = allSubmittedIssues.map((issue, index) => ({
+      ...issue,
+      githubIssueNumber: index + 1,
+      githubIssueUrl: `https://github.com/hltnina/brukertilbakemelding_KI/issues/${index + 1}`,
+    }))
+
+    setSubmissionMode('all')
+    setSubmittedIssue(null)
+    setSubmittedIssues(allSubmittedIssues)
+    setCreatedGithubIssues(mockGithubIssues)
+    setView('confirmation')
+  }
+
+  const handleReset = () => {
+    setSubmissionMode('single')
+    setSubmittedIssue(null)
+    setSubmittedIssues([])
+    setCreatedGithubIssues([])
+    setView('form')
+  }
+
+  useEffect(() => {
+    const reportSection = document.getElementById('report-section')
+    reportSection?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [view])
 
   return (
     <>
@@ -50,17 +98,31 @@ function Home() {
           </p>
         </div>
 
-        {view === 'form' && <ReportForm onSubmit={() => setView('analysis')} />}
+        {view === 'form' && (
+          <ReportForm
+            issues={issues}
+            setIssues={setIssues}
+            onSubmit={handleFormSubmit}
+          />
+        )}
 
         {view === 'analysis' && (
           <AnalysisResult
+            issues={issues}
             onEdit={() => setView('form')}
-            onSubmit={() => setView('confirmation')}
+            onSubmitSingle={handleSingleSubmission}
+            onSubmitAll={handleAllSubmissions}
           />
         )}
 
         {view === 'confirmation' && (
-          <SubmissionConfirmation onReset={() => setView('form')} />
+          <SubmissionConfirmation
+            onReset={handleReset}
+            submissionMode={submissionMode}
+            submittedIssue={submittedIssue}
+            submittedIssues={submittedIssues}
+            createdGithubIssues={createdGithubIssues}
+          />
         )}
 
         <Footer />
