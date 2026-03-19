@@ -14,6 +14,8 @@ const createEmptyIssue = (index) => ({
 function Home() {
   const [view, setView] = useState('form')
   const [issues, setIssues] = useState([createEmptyIssue(1)])
+  const [submissionMode, setSubmissionMode] = useState('single')
+  const [submittedIssue, setSubmittedIssue] = useState(null)
 
   const scrollToReportSection = () => {
     const reportSection = document.getElementById('report-section')
@@ -23,6 +25,23 @@ function Home() {
   const handleFormSubmit = (submittedIssues) => {
     setIssues(submittedIssues)
     setView('analysis')
+  }
+
+  const handleSingleSubmission = (issue) => {
+    setSubmissionMode('single')
+    setSubmittedIssue(issue)
+  }
+
+  const handleAllSubmissions = () => {
+    setSubmissionMode('all')
+    setSubmittedIssue(null)
+    setView('confirmation')
+  }
+
+  const handleReset = () => {
+    setSubmissionMode('single')
+    setSubmittedIssue(null)
+    setView('form')
   }
 
   return (
@@ -68,12 +87,17 @@ function Home() {
           <AnalysisResult
             issues={issues}
             onEdit={() => setView('form')}
-            onSubmit={() => setView('confirmation')}
+            onSubmitSingle={handleSingleSubmission}
+            onSubmitAll={handleAllSubmissions}
           />
         )}
 
         {view === 'confirmation' && (
-          <SubmissionConfirmation onReset={() => setView('form')} />
+          <SubmissionConfirmation
+            onReset={handleReset}
+            submissionMode={submissionMode}
+            submittedIssue={submittedIssue}
+          />
         )}
 
         <Footer />
