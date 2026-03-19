@@ -87,8 +87,8 @@ function ReportForm({ onSubmit }) {
 
         <div className="add-issue-panel">
           <p>
-            Har du funnet flere problemer? Trykk pa pluss-knappen for a legge
-            til enda et problem i samme innsending.
+            Har du funnet flere problemer? Trykk på + for å legge
+            til flere problemer.
           </p>
           <button
             type="button"
