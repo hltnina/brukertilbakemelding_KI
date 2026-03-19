@@ -144,7 +144,7 @@ function AnalysisResult({ issues, onEdit, onSubmitSingle, onSubmitAll }) {
         </div>
       ) : null}
 
-      {issues.length > 1 && visibleIssues.length > 0 ? (
+      {submittedIssues.length > 0 && visibleIssues.length > 0 ? (
         <div className="analysis-submit-all">
           <button
             type="button"
