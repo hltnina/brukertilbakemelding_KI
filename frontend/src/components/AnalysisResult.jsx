@@ -77,6 +77,18 @@ function AnalysisResult({ issues, onEdit, onSubmit }) {
           </article>
         ))}
       </div>
+
+      {issues.length > 1 ? (
+        <div className="analysis-submit-all">
+          <button
+            type="button"
+            className="analysis-submit-button"
+            onClick={onSubmit}
+          >
+            Send inn alle
+          </button>
+        </div>
+      ) : null}
     </div>
   )
 }

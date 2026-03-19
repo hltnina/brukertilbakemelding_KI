@@ -583,6 +583,12 @@
   transform: translateY(-1px);
 }
 
+.analysis-submit-all {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
 .confirmation-shell {
   width: min(100% - 3rem, 980px);
   min-height: 640px;
