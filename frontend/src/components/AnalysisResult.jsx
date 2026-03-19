@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 function AnalysisResult({ issues, onEdit, onSubmitSingle, onSubmitAll }) {
   const [submittedIssues, setSubmittedIssues] = useState([])
+  const hasTriggeredAutoConfirmation = useRef(false)
 
   const handleSingleSubmit = (issue) => {
     setSubmittedIssues((currentSubmittedIssues) => {
@@ -26,6 +27,17 @@ function AnalysisResult({ issues, onEdit, onSubmitSingle, onSubmitAll }) {
     (issue) =>
       !submittedIssues.some((submittedIssue) => submittedIssue.id === issue.id),
   )
+
+  useEffect(() => {
+    if (
+      submittedIssues.length > 0 &&
+      visibleIssues.length === 0 &&
+      !hasTriggeredAutoConfirmation.current
+    ) {
+      hasTriggeredAutoConfirmation.current = true
+      onSubmitAll(issues)
+    }
+  }, [issues, onSubmitAll, submittedIssues.length, visibleIssues.length])
 
   return (
     <div className="analysis-shell">
@@ -111,8 +123,8 @@ function AnalysisResult({ issues, onEdit, onSubmitSingle, onSubmitAll }) {
         </div>
       ) : (
         <div className="analysis-empty-state">
-          Alle problemene er markert som sendt inn. Du kan bruke{' '}
-          <strong>Send inn alle</strong> for å gå videre til bekreftelsen.
+          Alle problemene er markert som sendt inn. Du sendes videre til
+          bekreftelsen.
         </div>
       )}
 
@@ -132,7 +144,7 @@ function AnalysisResult({ issues, onEdit, onSubmitSingle, onSubmitAll }) {
         </div>
       ) : null}
 
-      {issues.length > 1 ? (
+      {submittedIssues.length > 0 && visibleIssues.length > 0 ? (
         <div className="analysis-submit-all">
           <button
             type="button"
