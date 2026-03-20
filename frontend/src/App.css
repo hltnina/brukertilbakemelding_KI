@@ -527,6 +527,11 @@
   transform: translateY(-1px);
 }
 
+.option-buttons button.is-active {
+  background: #1f3b73;
+  color: #f8fafc;
+}
+
 .upload-group {
   display: flex;
   flex-direction: column;
