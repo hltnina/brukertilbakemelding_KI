@@ -27,6 +27,7 @@ const promptTemplates = {
 function ReportForm({ issues, setIssues, onSubmit }) {
   const fileInputRef = useRef(null)
   const [selectedFileName, setSelectedFileName] = useState('')
+  const [errors, setErrors] = useState({})
 
   const handleUploadClick = () => {
     fileInputRef.current?.click()
@@ -38,6 +39,18 @@ function ReportForm({ issues, setIssues, onSubmit }) {
   }
 
   const handleIssueChange = (issueId, field, value) => {
+    const errorKey = `${issueId}-${field}`
+
+    setErrors((currentErrors) => {
+      if (!currentErrors[errorKey]) {
+        return currentErrors
+      }
+
+      const updatedErrors = { ...currentErrors }
+      delete updatedErrors[errorKey]
+      return updatedErrors
+    })
+
     setIssues((currentIssues) =>
       currentIssues.map((issue) =>
         issue.id === issueId ? { ...issue, [field]: value } : issue
@@ -73,9 +86,51 @@ function ReportForm({ issues, setIssues, onSubmit }) {
   }
 
   const handleRemoveIssue = (issueId) => {
+    setErrors((currentErrors) => {
+      const updatedErrors = { ...currentErrors }
+      delete updatedErrors[`${issueId}-title`]
+      delete updatedErrors[`${issueId}-description`]
+      return updatedErrors
+    })
+
     setIssues((currentIssues) =>
       currentIssues.filter((issue) => issue.id !== issueId)
     )
+  }
+
+  const handleSubmit = () => {
+    const nextErrors = {}
+    let firstInvalidFieldId = null
+
+    issues.forEach((issue) => {
+      if (issue.title.trim() === '') {
+        nextErrors[`${issue.id}-title`] = 'Du må fylle inn tittel på sak.'
+        if (!firstInvalidFieldId) {
+          firstInvalidFieldId = `report-title-${issue.id}`
+        }
+      }
+
+      if (issue.description.trim() === '') {
+        nextErrors[`${issue.id}-description`] =
+          'Du må fylle inn problembeskrivelse.'
+        if (!firstInvalidFieldId) {
+          firstInvalidFieldId = `report-description-${issue.id}`
+        }
+      }
+    })
+
+    setErrors(nextErrors)
+
+    if (firstInvalidFieldId) {
+      window.requestAnimationFrame(() => {
+        const field = document.getElementById(firstInvalidFieldId)
+        field?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        field?.focus()
+      })
+      return
+    }
+
+    onSubmit(issues)
   }
 
   return (
@@ -103,6 +158,7 @@ function ReportForm({ issues, setIssues, onSubmit }) {
               id={`report-title-${issue.id}`}
               placeholder="Tittel på sak..."
               value={issue.title}
+              error={errors[`${issue.id}-title`]}
               onChange={(event) =>
                 handleIssueChange(issue.id, 'title', event.target.value)
               }
@@ -113,6 +169,7 @@ function ReportForm({ issues, setIssues, onSubmit }) {
               id={`report-description-${issue.id}`}
               placeholder="Legg inn din beskrivelse..."
               value={issue.description}
+              error={errors[`${issue.id}-description`]}
               onChange={(event) =>
                 handleIssueChange(issue.id, 'description', event.target.value)
               }
@@ -194,7 +251,7 @@ function ReportForm({ issues, setIssues, onSubmit }) {
       <button
         type="button"
         className="submit-button"
-        onClick={() => onSubmit(issues)}
+        onClick={handleSubmit}
       >
         Send inn
       </button>

@@ -1,4 +1,4 @@
-function TextAreaField({ label, id, placeholder, value, onChange }) {
+function TextAreaField({ label, id, placeholder, value, onChange, error }) {
   return (
     <div className="input-field">
       <label htmlFor={id}>{label}</label>
@@ -7,7 +7,10 @@ function TextAreaField({ label, id, placeholder, value, onChange }) {
         placeholder={placeholder}
         value={value}
         onChange={onChange}
+        aria-invalid={Boolean(error)}
+        className={error ? 'has-error' : ''}
       ></textarea>
+      {error ? <p className="input-field-error">{error}</p> : null}
     </div>
   )
 }
