@@ -49,11 +49,17 @@ function ReportForm({ issues, setIssues, onSubmit }) {
     setIssues((currentIssues) =>
       currentIssues.map((issue) =>
         issue.id === issueId
-          ? {
-              ...issue,
-              description: promptTemplates[templateKey].text,
-              template: templateKey,
-            }
+          ? issue.template === templateKey
+            ? {
+                ...issue,
+                description: '',
+                template: '',
+              }
+            : {
+                ...issue,
+                description: promptTemplates[templateKey].text,
+                template: templateKey,
+              }
           : issue
       )
     )
