@@ -6,11 +6,28 @@ const createEmptyIssue = (index) => ({
   id: `issue-${index}-${Date.now()}`,
   title: '',
   description: '',
+  template: '',
 })
+
+const promptTemplates = {
+  bug: {
+    label: 'Opprett feilmelding',
+    text: 'Beskriv feilen du opplever, hvor den oppstår, hva du gjorde da den oppsto, og hva du forventet skulle skje.',
+  },
+  improvement: {
+    label: 'Foreslå forbedring',
+    text: 'Beskriv hva som kan forbedres, hvorfor det vil hjelpe brukeren, og hvor i løsningen denne forbedringen gjelder.',
+  },
+  severity: {
+    label: 'Alvorlighetsgrad',
+    text: 'Beskriv hvor alvorlig problemet er, hvem det påvirker, og om det hindrer bruk av tjenesten helt eller delvis.',
+  },
+}
 
 function ReportForm({ issues, setIssues, onSubmit }) {
   const fileInputRef = useRef(null)
   const [selectedFileName, setSelectedFileName] = useState('')
+  const [errors, setErrors] = useState({})
 
   const handleUploadClick = () => {
     fileInputRef.current?.click()
@@ -22,9 +39,41 @@ function ReportForm({ issues, setIssues, onSubmit }) {
   }
 
   const handleIssueChange = (issueId, field, value) => {
+    const errorKey = `${issueId}-${field}`
+
+    setErrors((currentErrors) => {
+      if (!currentErrors[errorKey]) {
+        return currentErrors
+      }
+
+      const updatedErrors = { ...currentErrors }
+      delete updatedErrors[errorKey]
+      return updatedErrors
+    })
+
     setIssues((currentIssues) =>
       currentIssues.map((issue) =>
         issue.id === issueId ? { ...issue, [field]: value } : issue
+      )
+    )
+  }
+
+  const handleApplyTemplate = (issueId, templateKey) => {
+    setIssues((currentIssues) =>
+      currentIssues.map((issue) =>
+        issue.id === issueId
+          ? issue.template === templateKey
+            ? {
+                ...issue,
+                description: '',
+                template: '',
+              }
+            : {
+                ...issue,
+                description: promptTemplates[templateKey].text,
+                template: templateKey,
+              }
+          : issue
       )
     )
   }
@@ -37,9 +86,51 @@ function ReportForm({ issues, setIssues, onSubmit }) {
   }
 
   const handleRemoveIssue = (issueId) => {
+    setErrors((currentErrors) => {
+      const updatedErrors = { ...currentErrors }
+      delete updatedErrors[`${issueId}-title`]
+      delete updatedErrors[`${issueId}-description`]
+      return updatedErrors
+    })
+
     setIssues((currentIssues) =>
       currentIssues.filter((issue) => issue.id !== issueId)
     )
+  }
+
+  const handleSubmit = () => {
+    const nextErrors = {}
+    let firstInvalidFieldId = null
+
+    issues.forEach((issue) => {
+      if (issue.title.trim() === '') {
+        nextErrors[`${issue.id}-title`] = 'Du må fylle inn tittel på sak.'
+        if (!firstInvalidFieldId) {
+          firstInvalidFieldId = `report-title-${issue.id}`
+        }
+      }
+
+      if (issue.description.trim() === '') {
+        nextErrors[`${issue.id}-description`] =
+          'Du må fylle inn problembeskrivelse.'
+        if (!firstInvalidFieldId) {
+          firstInvalidFieldId = `report-description-${issue.id}`
+        }
+      }
+    })
+
+    setErrors(nextErrors)
+
+    if (firstInvalidFieldId) {
+      window.requestAnimationFrame(() => {
+        const field = document.getElementById(firstInvalidFieldId)
+        field?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        field?.focus()
+      })
+      return
+    }
+
+    onSubmit(issues)
   }
 
   return (
@@ -67,6 +158,7 @@ function ReportForm({ issues, setIssues, onSubmit }) {
               id={`report-title-${issue.id}`}
               placeholder="Tittel på sak..."
               value={issue.title}
+              error={errors[`${issue.id}-title`]}
               onChange={(event) =>
                 handleIssueChange(issue.id, 'title', event.target.value)
               }
@@ -77,10 +169,28 @@ function ReportForm({ issues, setIssues, onSubmit }) {
               id={`report-description-${issue.id}`}
               placeholder="Legg inn din beskrivelse..."
               value={issue.description}
+              error={errors[`${issue.id}-description`]}
               onChange={(event) =>
                 handleIssueChange(issue.id, 'description', event.target.value)
               }
             />
+
+            <div className="option-group">
+              <p>Eller velg et av følgende alternativ</p>
+
+              <div className="option-buttons">
+                {Object.entries(promptTemplates).map(([templateKey, template]) => (
+                  <button
+                    key={templateKey}
+                    type="button"
+                    className={issue.template === templateKey ? 'is-active' : ''}
+                    onClick={() => handleApplyTemplate(issue.id, templateKey)}
+                  >
+                    {template.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </section>
         ))}
 
@@ -99,16 +209,6 @@ function ReportForm({ issues, setIssues, onSubmit }) {
             </span>
             Legg til et nytt problem
           </button>
-        </div>
-      </div>
-
-      <div className="option-group">
-        <p>Eller velg et av følgende alternativ</p>
-
-        <div className="option-buttons">
-          <button type="button">Opprett feilmelding</button>
-          <button type="button">Foreslå forbedring</button>
-          <button type="button">Alvorlighetsgrad</button>
         </div>
       </div>
 
@@ -151,7 +251,7 @@ function ReportForm({ issues, setIssues, onSubmit }) {
       <button
         type="button"
         className="submit-button"
-        onClick={() => onSubmit(issues)}
+        onClick={handleSubmit}
       >
         Send inn
       </button>
