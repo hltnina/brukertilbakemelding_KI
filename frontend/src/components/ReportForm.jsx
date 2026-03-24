@@ -103,13 +103,6 @@ function ReportForm({ issues, setIssues, onSubmit }) {
     let firstInvalidFieldId = null
 
     issues.forEach((issue) => {
-      if (issue.title.trim() === '') {
-        nextErrors[`${issue.id}-title`] = 'Du må fylle inn tittel på sak.'
-        if (!firstInvalidFieldId) {
-          firstInvalidFieldId = `report-title-${issue.id}`
-        }
-      }
-
       if (issue.description.trim() === '') {
         nextErrors[`${issue.id}-description`] =
           'Du må fylle inn problembeskrivelse.'
@@ -154,7 +147,7 @@ function ReportForm({ issues, setIssues, onSubmit }) {
             </div>
 
             <InputField
-              label="Tittel på sak*"
+              label="Tittel på sak"
               id={`report-title-${issue.id}`}
               placeholder="Tittel på sak..."
               value={issue.title}
