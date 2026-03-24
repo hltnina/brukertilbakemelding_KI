@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import InputField from './InputField'
 import TextAreaField from './TextAreaField'
 
@@ -7,6 +7,8 @@ const createEmptyIssue = (index) => ({
   title: '',
   description: '',
   template: '',
+  file: null,
+  fileName: '',
 })
 
 const promptTemplates = {
@@ -25,18 +27,7 @@ const promptTemplates = {
 }
 
 function ReportForm({ issues, setIssues, onSubmit }) {
-  const fileInputRef = useRef(null)
-  const [selectedFileName, setSelectedFileName] = useState('')
   const [errors, setErrors] = useState({})
-
-  const handleUploadClick = () => {
-    fileInputRef.current?.click()
-  }
-
-  const handleFileChange = (event) => {
-    const file = event.target.files?.[0]
-    setSelectedFileName(file ? file.name : '')
-  }
 
   const handleIssueChange = (issueId, field, value) => {
     const errorKey = `${issueId}-${field}`
@@ -54,6 +45,27 @@ function ReportForm({ issues, setIssues, onSubmit }) {
     setIssues((currentIssues) =>
       currentIssues.map((issue) =>
         issue.id === issueId ? { ...issue, [field]: value } : issue
+      )
+    )
+  }
+
+  const handleUploadClick = (issueId) => {
+    const fileInput = document.getElementById(`report-file-${issueId}`)
+    fileInput?.click()
+  }
+
+  const handleFileChange = (issueId, event) => {
+    const file = event.target.files?.[0] ?? null
+
+    setIssues((currentIssues) =>
+      currentIssues.map((issue) =>
+        issue.id === issueId
+          ? {
+              ...issue,
+              file,
+              fileName: file ? file.name : '',
+            }
+          : issue
       )
     )
   }
@@ -184,6 +196,42 @@ function ReportForm({ issues, setIssues, onSubmit }) {
                 ))}
               </div>
             </div>
+
+            <div className="upload-group">
+              <p>Last opp vedlegg (i form av fil, bilde eller video)</p>
+              <input
+                id={`report-file-${issue.id}`}
+                type="file"
+                className="upload-input"
+                accept="image/*,video/*,.pdf,.doc,.docx,.txt"
+                onChange={(event) => handleFileChange(issue.id, event)}
+              />
+              <button
+                type="button"
+                className="upload-button"
+                onClick={() => handleUploadClick(issue.id)}
+              >
+                Last opp
+                <svg
+                  className="upload-icon"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path
+                    d="M12 16V4M12 4L7 9M12 4L17 9M5 15L5 18C5 19.1046 5.89543 20 7 20H17C18.1046 20 19 19.1046 19 18V15"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+              {issue.fileName ? (
+                <span className="upload-file-name">Valgt fil: {issue.fileName}</span>
+              ) : null}
+            </div>
           </section>
         ))}
 
@@ -203,42 +251,6 @@ function ReportForm({ issues, setIssues, onSubmit }) {
             Legg til et nytt problem
           </button>
         </div>
-      </div>
-
-      <div className="upload-group">
-        <p>Last opp vedlegg (i form av fil, bilde eller video)*</p>
-        <input
-          ref={fileInputRef}
-          type="file"
-          className="upload-input"
-          accept="image/*,video/*,.pdf,.doc,.docx,.txt"
-          onChange={handleFileChange}
-        />
-        <button
-          type="button"
-          className="upload-button"
-          onClick={handleUploadClick}
-        >
-          Last opp
-          <svg
-            className="upload-icon"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-            focusable="false"
-          >
-            <path
-              d="M12 16V4M12 4L7 9M12 4L17 9M5 15L5 18C5 19.1046 5.89543 20 7 20H17C18.1046 20 19 19.1046 19 18V15"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </button>
-        {selectedFileName ? (
-          <span className="upload-file-name">Valgt fil: {selectedFileName}</span>
-        ) : null}
       </div>
 
       <button
