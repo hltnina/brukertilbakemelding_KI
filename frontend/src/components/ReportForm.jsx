@@ -70,6 +70,26 @@ function ReportForm({ issues, setIssues, onSubmit }) {
     )
   }
 
+  const handleRemoveFile = (issueId) => {
+    const fileInput = document.getElementById(`report-file-${issueId}`)
+
+    if (fileInput) {
+      fileInput.value = ''
+    }
+
+    setIssues((currentIssues) =>
+      currentIssues.map((issue) =>
+        issue.id === issueId
+          ? {
+              ...issue,
+              file: null,
+              fileName: '',
+            }
+          : issue
+      )
+    )
+  }
+
   const handleApplyTemplate = (issueId, templateKey) => {
     setIssues((currentIssues) =>
       currentIssues.map((issue) =>
@@ -229,7 +249,17 @@ function ReportForm({ issues, setIssues, onSubmit }) {
                 </svg>
               </button>
               {issue.fileName ? (
-                <span className="upload-file-name">Valgt fil: {issue.fileName}</span>
+                <div className="upload-file-name-row">
+                  <span className="upload-file-name">Valgt fil: {issue.fileName}</span>
+                  <button
+                    type="button"
+                    className="remove-file-button"
+                    onClick={() => handleRemoveFile(issue.id)}
+                    aria-label={`Fjern fil for problem ${index + 1}`}
+                  >
+                    ×
+                  </button>
+                </div>
               ) : null}
             </div>
           </section>
