@@ -591,6 +591,33 @@
   font-weight: 500;
 }
 
+.upload-file-name-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.remove-file-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(17, 24, 39, 0.12);
+  color: #111827;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.remove-file-button:hover {
+  background: rgba(17, 24, 39, 0.2);
+  transform: translateY(-1px);
+}
+
 .upload-icon {
   width: 1.2rem;
   height: 1.2rem;
