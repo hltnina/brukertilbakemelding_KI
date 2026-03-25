@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-const CONTACT_EMAIL = 'contact@tingtun.no'
+const CONTACT_EMAIL = 'nthuynh@uia.no'
 
 function ContactModal({ isOpen, onClose }) {
   const [fromEmail, setFromEmail] = useState('')
