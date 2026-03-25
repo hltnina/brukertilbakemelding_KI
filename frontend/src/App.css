@@ -473,6 +473,12 @@
   color: #9ca3af;
 }
 
+.input-field input.has-error,
+.input-field textarea.has-error {
+  outline: 3px solid rgba(185, 28, 28, 0.16);
+  border: 2px solid #b91c1c;
+}
+
 .input-field textarea {
   width: 100%;
   min-height: 180px;
@@ -489,6 +495,13 @@
 
 .input-field textarea::placeholder {
   color: #9ca3af;
+}
+
+.input-field-error {
+  margin: 0;
+  color: #7f1d1d;
+  font-size: 0.95rem;
+  font-weight: 600;
 }
 
 .option-group {
@@ -525,6 +538,11 @@
 .option-buttons button:hover {
   background: #e5e7eb;
   transform: translateY(-1px);
+}
+
+.option-buttons button.is-active {
+  background: #1f3b73;
+  color: #f8fafc;
 }
 
 .upload-group {
@@ -573,6 +591,33 @@
   font-weight: 500;
 }
 
+.upload-file-name-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.remove-file-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(17, 24, 39, 0.12);
+  color: #111827;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.remove-file-button:hover {
+  background: rgba(17, 24, 39, 0.2);
+  transform: translateY(-1px);
+}
+
 .upload-icon {
   width: 1.2rem;
   height: 1.2rem;
@@ -598,6 +643,7 @@
   background: #162b57;
   transform: translateY(-1px);
 }
+
 
 .analysis-shell {
   width: min(100% - 3rem, 980px);
