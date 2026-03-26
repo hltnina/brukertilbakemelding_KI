@@ -10,6 +10,7 @@ const createEmptyIssue = (index) => ({
   id: `issue-${index}-${Date.now()}`,
   title: '',
   description: '',
+  files: [],
 })
 
 function Home() {

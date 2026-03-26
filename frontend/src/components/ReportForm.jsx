@@ -7,9 +7,7 @@ const createEmptyIssue = (index) => ({
   title: '',
   description: '',
   template: '',
-  file: null,
-  fileName: '',
-  filePreviewUrl: '',
+  files: [],
 })
 
 const promptTemplates = {
@@ -82,33 +80,10 @@ function ReportForm({ issues, setIssues, onSubmit }) {
   }
 
   const handleFileChange = (issueId, event) => {
-    const file = event.target.files?.[0] ?? null
+    const selectedFiles = Array.from(event.target.files ?? [])
 
-    setIssues((currentIssues) =>
-      currentIssues.map((issue) =>
-        issue.id === issueId
-          ? {
-              ...issue,
-              ...(issue.filePreviewUrl
-                ? (() => {
-                    URL.revokeObjectURL(issue.filePreviewUrl)
-                    return {}
-                  })()
-                : {}),
-              file,
-              fileName: file ? file.name : '',
-              filePreviewUrl: file ? URL.createObjectURL(file) : '',
-            }
-          : issue
-      )
-    )
-  }
-
-  const handleRemoveFile = (issueId) => {
-    const fileInput = document.getElementById(`report-file-${issueId}`)
-
-    if (fileInput) {
-      fileInput.value = ''
+    if (selectedFiles.length === 0) {
+      return
     }
 
     setIssues((currentIssues) =>
@@ -116,18 +91,43 @@ function ReportForm({ issues, setIssues, onSubmit }) {
         issue.id === issueId
           ? {
               ...issue,
-              ...(issue.filePreviewUrl
-                ? (() => {
-                    URL.revokeObjectURL(issue.filePreviewUrl)
-                    return {}
-                  })()
-                : {}),
-              file: null,
-              fileName: '',
-              filePreviewUrl: '',
+              files: [
+                ...issue.files,
+                ...selectedFiles.map((file) => ({
+                  id: `${issueId}-${file.name}-${file.size}-${Date.now()}-${Math.random()
+                    .toString(36)
+                    .slice(2, 8)}`,
+                  file,
+                  fileName: file.name,
+                  filePreviewUrl: URL.createObjectURL(file),
+                })),
+              ],
             }
           : issue
       )
+    )
+
+    event.target.value = ''
+  }
+
+  const handleRemoveFile = (issueId, fileId) => {
+    setIssues((currentIssues) =>
+      currentIssues.map((issue) => {
+        if (issue.id !== issueId) {
+          return issue
+        }
+
+        const fileToRemove = issue.files.find((file) => file.id === fileId)
+
+        if (fileToRemove?.filePreviewUrl) {
+          URL.revokeObjectURL(fileToRemove.filePreviewUrl)
+        }
+
+        return {
+          ...issue,
+          files: issue.files.filter((file) => file.id !== fileId),
+        }
+      })
     )
   }
 
@@ -264,6 +264,7 @@ function ReportForm({ issues, setIssues, onSubmit }) {
                 id={`report-file-${issue.id}`}
                 type="file"
                 className="upload-input"
+                multiple
                 accept="image/*,video/*,.pdf,.doc,.docx,.txt"
                 onChange={(event) => handleFileChange(issue.id, event)}
               />
@@ -289,54 +290,58 @@ function ReportForm({ issues, setIssues, onSubmit }) {
                   />
                 </svg>
               </button>
-              {issue.fileName ? (
-                <div className="upload-file-name-row">
-                  <a
-                    href={issue.filePreviewUrl || '#'}
-                    className="upload-file-link"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <span className="upload-file-icon" aria-hidden="true">
-                      <svg viewBox="0 0 24 24" focusable="false">
-                        <path
-                          d="M8 3.5h6l4 4V20a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 6 20V5A1.5 1.5 0 0 1 7.5 3.5Z"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="1.8"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M14 3.5V8h4"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="1.8"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M9 12h6M9 15h4"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="1.8"
-                          strokeLinecap="round"
-                        />
-                      </svg>
-                    </span>
-                    <span className="upload-file-meta">
-                      <span className="upload-file-name">{issue.fileName}</span>
-                      <span className="upload-file-type">
-                        {getFileCategoryLabel(issue.fileName)}
-                      </span>
-                    </span>
-                  </a>
-                  <button
-                    type="button"
-                    className="remove-file-button"
-                    onClick={() => handleRemoveFile(issue.id)}
-                    aria-label={`Fjern fil for problem ${index + 1}`}
-                  >
-                    ×
-                  </button>
+              {issue.files.length > 0 ? (
+                <div className="upload-file-list">
+                  {issue.files.map((file) => (
+                    <div key={file.id} className="upload-file-name-row">
+                      <a
+                        href={file.filePreviewUrl || '#'}
+                        className="upload-file-link"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <span className="upload-file-icon" aria-hidden="true">
+                          <svg viewBox="0 0 24 24" focusable="false">
+                            <path
+                              d="M8 3.5h6l4 4V20a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 6 20V5A1.5 1.5 0 0 1 7.5 3.5Z"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="1.8"
+                              strokeLinejoin="round"
+                            />
+                            <path
+                              d="M14 3.5V8h4"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="1.8"
+                              strokeLinejoin="round"
+                            />
+                            <path
+                              d="M9 12h6M9 15h4"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="1.8"
+                              strokeLinecap="round"
+                            />
+                          </svg>
+                        </span>
+                        <span className="upload-file-meta">
+                          <span className="upload-file-name">{file.fileName}</span>
+                          <span className="upload-file-type">
+                            {getFileCategoryLabel(file.fileName)}
+                          </span>
+                        </span>
+                      </a>
+                      <button
+                        type="button"
+                        className="remove-file-button"
+                        onClick={() => handleRemoveFile(issue.id, file.id)}
+                        aria-label={`Fjern fil ${file.fileName} for problem ${index + 1}`}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
                 </div>
               ) : null}
             </div>

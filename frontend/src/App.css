@@ -599,6 +599,12 @@
   box-shadow: 0 6px 14px rgba(15, 23, 42, 0.08);
 }
 
+.upload-file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
 .upload-file-link {
   display: inline-flex;
   align-items: center;
