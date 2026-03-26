@@ -9,6 +9,7 @@ const createEmptyIssue = (index) => ({
   template: '',
   file: null,
   fileName: '',
+  filePreviewUrl: '',
 })
 
 const promptTemplates = {
@@ -24,6 +25,32 @@ const promptTemplates = {
     label: 'Alvorlighetsgrad',
     text: 'Beskriv hvor alvorlig problemet er, hvem det påvirker, og om det hindrer bruk av tjenesten helt eller delvis.',
   },
+}
+
+const getFileCategoryLabel = (fileName) => {
+  const extension = fileName.split('.').pop()?.toLowerCase()
+
+  if (!extension) {
+    return 'Fil'
+  }
+
+  if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'].includes(extension)) {
+    return 'Bilde'
+  }
+
+  if (['mp4', 'mov', 'avi', 'webm', 'mkv'].includes(extension)) {
+    return 'Video'
+  }
+
+  if (extension === 'pdf') {
+    return 'PDF-dokument'
+  }
+
+  if (['doc', 'docx', 'txt', 'rtf', 'odt'].includes(extension)) {
+    return 'Dokument'
+  }
+
+  return 'Fil'
 }
 
 function ReportForm({ issues, setIssues, onSubmit }) {
@@ -62,8 +89,15 @@ function ReportForm({ issues, setIssues, onSubmit }) {
         issue.id === issueId
           ? {
               ...issue,
+              ...(issue.filePreviewUrl
+                ? (() => {
+                    URL.revokeObjectURL(issue.filePreviewUrl)
+                    return {}
+                  })()
+                : {}),
               file,
               fileName: file ? file.name : '',
+              filePreviewUrl: file ? URL.createObjectURL(file) : '',
             }
           : issue
       )
@@ -82,8 +116,15 @@ function ReportForm({ issues, setIssues, onSubmit }) {
         issue.id === issueId
           ? {
               ...issue,
+              ...(issue.filePreviewUrl
+                ? (() => {
+                    URL.revokeObjectURL(issue.filePreviewUrl)
+                    return {}
+                  })()
+                : {}),
               file: null,
               fileName: '',
+              filePreviewUrl: '',
             }
           : issue
       )
@@ -250,7 +291,44 @@ function ReportForm({ issues, setIssues, onSubmit }) {
               </button>
               {issue.fileName ? (
                 <div className="upload-file-name-row">
-                  <span className="upload-file-name">Valgt fil: {issue.fileName}</span>
+                  <a
+                    href={issue.filePreviewUrl || '#'}
+                    className="upload-file-link"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <span className="upload-file-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" focusable="false">
+                        <path
+                          d="M8 3.5h6l4 4V20a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 6 20V5A1.5 1.5 0 0 1 7.5 3.5Z"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M14 3.5V8h4"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M9 12h6M9 15h4"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                    </span>
+                    <span className="upload-file-meta">
+                      <span className="upload-file-name">{issue.fileName}</span>
+                      <span className="upload-file-type">
+                        {getFileCategoryLabel(issue.fileName)}
+                      </span>
+                    </span>
+                  </a>
                   <button
                     type="button"
                     className="remove-file-button"
