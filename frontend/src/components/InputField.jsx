@@ -1,4 +1,12 @@
-function InputField({ label, id, type = 'text', placeholder, value, onChange }) {
+function InputField({
+  label,
+  id,
+  type = 'text',
+  placeholder,
+  value,
+  onChange,
+  error,
+}) {
   return (
     <div className="input-field">
       <label htmlFor={id}>{label}</label>
@@ -8,7 +16,10 @@ function InputField({ label, id, type = 'text', placeholder, value, onChange }) 
         placeholder={placeholder}
         value={value}
         onChange={onChange}
+        aria-invalid={Boolean(error)}
+        className={error ? 'has-error' : ''}
       />
+      {error ? <p className="input-field-error">{error}</p> : null}
     </div>
   )
 }
