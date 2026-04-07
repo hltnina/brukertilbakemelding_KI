@@ -5,6 +5,7 @@ import Footer from '../components/Footer'
 import Navbar from '../components/Navbar'
 import ReportForm from '../components/ReportForm'
 import SubmissionConfirmation from '../components/SubmissionConfirmation'
+import Loader from '../components/Loader'
 
 const createEmptyIssue = (index) => ({
   id: `issue-${index}-${Date.now()}`,
@@ -15,6 +16,8 @@ const createEmptyIssue = (index) => ({
 
 function Home() {
   const [view, setView] = useState('form')
+  const [isLoading, setIsLoading] = useState(false)
+  const [loadingText, setLoadingText] = useState('')
   const [isContactOpen, setIsContactOpen] = useState(false)
   const [issues, setIssues] = useState([createEmptyIssue(1)])
   const [submissionMode, setSubmissionMode] = useState('single')
@@ -28,9 +31,15 @@ function Home() {
   }
 
   const handleFormSubmit = (submittedIssues) => {
+    setLoadingText('Genererer analyse...')
+    setIsLoading(true)
     setIssues(submittedIssues)
-    setView('analysis')
-  }
+
+    setTimeout(() => {
+      setView('analysis')
+      setIsLoading(false)
+    }, 2000)
+}
 
   const handleSingleSubmission = (issue) => {
     setSubmissionMode('single')
@@ -38,17 +47,23 @@ function Home() {
   }
 
   const handleAllSubmissions = (allSubmittedIssues) => {
+    setLoadingText('Oppretter GitHub issues...')
+    setIsLoading(true)
+
     const mockGithubIssues = allSubmittedIssues.map((issue, index) => ({
       ...issue,
       githubIssueNumber: index + 1,
       githubIssueUrl: `https://github.com/hltnina/brukertilbakemelding_KI/issues/${index + 1}`,
     }))
 
-    setSubmissionMode('all')
-    setSubmittedIssue(null)
-    setSubmittedIssues(allSubmittedIssues)
-    setCreatedGithubIssues(mockGithubIssues)
-    setView('confirmation')
+    setTimeout(() => {
+      setSubmissionMode('all')
+      setSubmittedIssue(null)
+      setSubmittedIssues(allSubmittedIssues)
+      setCreatedGithubIssues(mockGithubIssues)
+      setView('confirmation')
+      setIsLoading(false)
+    }, 1500)
   }
 
   const handleReset = () => {
@@ -99,31 +114,37 @@ function Home() {
           </p>
         </div>
 
-        {view === 'form' && (
-          <ReportForm
-            issues={issues}
-            setIssues={setIssues}
-            onSubmit={handleFormSubmit}
-          />
-        )}
+       {isLoading ? (
+         <Loader text={loadingText} />
+      ) : (
+        <>
+            {view === 'form' && (
+              <ReportForm
+                issues={issues}
+                setIssues={setIssues}
+                onSubmit={handleFormSubmit}
+              />
+            )}
 
-        {view === 'analysis' && (
-          <AnalysisResult
-            issues={issues}
-            onEdit={() => setView('form')}
-            onSubmitSingle={handleSingleSubmission}
-            onSubmitAll={handleAllSubmissions}
-          />
-        )}
+            {view === 'analysis' && (
+              <AnalysisResult
+                issues={issues}
+                onEdit={() => setView('form')}
+                onSubmitSingle={handleSingleSubmission}
+                onSubmitAll={handleAllSubmissions}
+              />
+            )}
 
-        {view === 'confirmation' && (
-          <SubmissionConfirmation
-            onReset={handleReset}
-            submissionMode={submissionMode}
-            submittedIssue={submittedIssue}
-            submittedIssues={submittedIssues}
-            createdGithubIssues={createdGithubIssues}
-          />
+            {view === 'confirmation' && (
+              <SubmissionConfirmation
+                onReset={handleReset}
+                submissionMode={submissionMode}
+                submittedIssue={submittedIssue}
+                submittedIssues={submittedIssues}
+                createdGithubIssues={createdGithubIssues}
+              />
+            )}
+          </>
         )}
 
         <Footer />

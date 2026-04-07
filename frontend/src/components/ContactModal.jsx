@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-const CONTACT_EMAIL = 'nthuynh@uia.no'
+const CONTACT_EMAIL = 'ninathuyle31@gmail.com'
 
 function ContactModal({ isOpen, onClose }) {
   const [fromEmail, setFromEmail] = useState('')
@@ -42,9 +42,34 @@ function ContactModal({ isOpen, onClose }) {
     return null
   }
 
-  const handleSubmit = (event) => {
+   const handleSubmit = async (event) => {
     event.preventDefault()
-    setSendState('sent')
+    setSendState('sending')
+
+    const formData = new FormData()
+    formData.append('access_key', 'YOUR_ACCESS_KEY_HERE')
+    formData.append('email', fromEmail)
+    formData.append('subject', subject || 'Ny melding fra kontaktskjema')
+    formData.append('message', message)
+    formData.append('to', CONTACT_EMAIL)
+
+    try {
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: formData,
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        setSendState('sent')
+      } else {
+        setSendState('error')
+      }
+    } catch (error) {
+      console.error('Feil ved sending:', error)
+      setSendState('error')
+    }
   }
 
   return (
@@ -109,8 +134,7 @@ function ContactModal({ isOpen, onClose }) {
 
           {sendState === 'sent' ? (
             <p className="contact-modal-notice">
-              Meldingen er klargjort med avsenderadresse. Hvis du vil, kan jeg
-              koble denne boksen til faktisk e-postsending i neste steg.
+              Meldingen er sendt til ninathuyle31@gmail.com. Vi svarer deg så snart som mulig!
             </p>
           ) : null}
 
