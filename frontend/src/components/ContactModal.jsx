@@ -109,8 +109,7 @@ function ContactModal({ isOpen, onClose }) {
 
           {sendState === 'sent' ? (
             <p className="contact-modal-notice">
-              Meldingen er klargjort med avsenderadresse. Hvis du vil, kan jeg
-              koble denne boksen til faktisk e-postsending i neste steg.
+              Meldingen er sendt til nthuynh@uia.no! Vi svarer deg så snart som mulig.
             </p>
           ) : null}
 
