@@ -6,24 +6,8 @@ const createEmptyIssue = (index) => ({
   id: `issue-${index}-${Date.now()}`,
   title: '',
   description: '',
-  template: '',
   files: [],
 })
-
-const promptTemplates = {
-  bug: {
-    label: 'Opprett feilmelding',
-    text: 'Beskriv feilen du opplever, hvor den oppstår, hva du gjorde da den oppsto, og hva du forventet skulle skje.',
-  },
-  improvement: {
-    label: 'Foreslå forbedring',
-    text: 'Beskriv hva som kan forbedres, hvorfor det vil hjelpe brukeren, og hvor i løsningen denne forbedringen gjelder.',
-  },
-  severity: {
-    label: 'Alvorlighetsgrad',
-    text: 'Beskriv hvor alvorlig problemet er, hvem det påvirker, og om det hindrer bruk av tjenesten helt eller delvis.',
-  },
-}
 
 const getFileCategoryLabel = (fileName) => {
   const extension = fileName.split('.').pop()?.toLowerCase()
@@ -131,26 +115,6 @@ function ReportForm({ issues, setIssues, onSubmit }) {
     )
   }
 
-  const handleApplyTemplate = (issueId, templateKey) => {
-    setIssues((currentIssues) =>
-      currentIssues.map((issue) =>
-        issue.id === issueId
-          ? issue.template === templateKey
-            ? {
-                ...issue,
-                description: '',
-                template: '',
-              }
-            : {
-                ...issue,
-                description: promptTemplates[templateKey].text,
-                template: templateKey,
-              }
-          : issue
-      )
-    )
-  }
-
   const handleAddIssue = () => {
     setIssues((currentIssues) => [
       ...currentIssues,
@@ -240,23 +204,6 @@ function ReportForm({ issues, setIssues, onSubmit }) {
                 handleIssueChange(issue.id, 'description', event.target.value)
               }
             />
-
-            <div className="option-group">
-              <p>Eller velg et av følgende alternativ</p>
-
-              <div className="option-buttons">
-                {Object.entries(promptTemplates).map(([templateKey, template]) => (
-                  <button
-                    key={templateKey}
-                    type="button"
-                    className={issue.template === templateKey ? 'is-active' : ''}
-                    onClick={() => handleApplyTemplate(issue.id, templateKey)}
-                  >
-                    {template.label}
-                  </button>
-                ))}
-              </div>
-            </div>
 
             <div className="upload-group">
               <p>Last opp vedlegg (i form av fil, bilde eller video)</p>
