@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import AnalysisResult from '../components/AnalysisResult'
 import ContactModal from '../components/ContactModal'
 import Footer from '../components/Footer'
@@ -37,9 +37,12 @@ function Home() {
 
     setTimeout(() => {
       setView('analysis')
+      requestAnimationFrame(() => {
+        scrollToReportSection()
+      })
       setIsLoading(false)
     }, 2000)
-}
+  }
 
   const handleIssueUpdate = (issueId, updates) => {
     setIssues((currentIssues) =>
@@ -70,6 +73,9 @@ function Home() {
       setSubmittedIssues(allSubmittedIssues)
       setCreatedGithubIssues(mockGithubIssues)
       setView('confirmation')
+      requestAnimationFrame(() => {
+        scrollToReportSection()
+      })
       setIsLoading(false)
     }, 1500)
   }
@@ -80,12 +86,10 @@ function Home() {
     setSubmittedIssues([])
     setCreatedGithubIssues([])
     setView('form')
+    requestAnimationFrame(() => {
+      scrollToReportSection()
+    })
   }
-
-  useEffect(() => {
-    const reportSection = document.getElementById('report-section')
-    reportSection?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }, [view])
 
   return (
     <>
