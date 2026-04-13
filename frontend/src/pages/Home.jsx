@@ -137,7 +137,7 @@ function Home() {
             {view === 'analysis' && (
               <AnalysisResult
                 issues={issues}
-                onEdit={() => setView('form')}
+                onSaveIssue={handleIssueUpdate}
                 onSubmitSingle={handleSingleSubmission}
                 onSubmitAll={handleAllSubmissions}
               />
