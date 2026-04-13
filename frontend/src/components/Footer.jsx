@@ -15,7 +15,7 @@ const Footer = () => {
             <span className="font-semibold">Tlf:</span> +47 918 62 892
           </p>
           <p className="text-base">
-            <span className="font-semibold">E-postadresse:</span> contact@tingtun.no
+            <span className="font-semibold">E-postadresse:</span> nthuynh@uia.no
           </p>
           <p className="text-base italic text-slate-600">
             Utviklet i samarbeid med Gruppe 03 og Tingtun
