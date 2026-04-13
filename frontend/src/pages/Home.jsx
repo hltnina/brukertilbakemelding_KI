@@ -44,6 +44,14 @@ function Home() {
     }, 2000)
   }
 
+  const handleIssueUpdate = (issueId, updates) => {
+    setIssues((currentIssues) =>
+      currentIssues.map((issue) =>
+        issue.id === issueId ? { ...issue, ...updates } : issue,
+      ),
+    )
+  }
+
   const handleSingleSubmission = (issue) => {
     setSubmissionMode('single')
     setSubmittedIssue(issue)
@@ -133,7 +141,7 @@ function Home() {
             {view === 'analysis' && (
               <AnalysisResult
                 issues={issues}
-                onEdit={handleReset}
+                onSaveIssue={handleIssueUpdate}
                 onSubmitSingle={handleSingleSubmission}
                 onSubmitAll={handleAllSubmissions}
               />
