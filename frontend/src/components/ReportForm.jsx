@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import InputField from './InputField'
 import TextAreaField from './TextAreaField'
+import Loader from './Loader'
+
 
 const createEmptyIssue = (index) => ({
   id: `issue-${index}-${Date.now()}`,
@@ -135,7 +137,7 @@ function ReportForm({ issues, setIssues, onSubmit }) {
     )
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const nextErrors = {}
     let firstInvalidFieldId = null
 
@@ -158,9 +160,77 @@ function ReportForm({ issues, setIssues, onSubmit }) {
         field?.focus()
       })
       return
-    }
+      }
 
-    onSubmit(issues)
+      try {
+          const updatedIssues = []
+
+          for (const issue of issues) {
+              const formData = new FormData()
+              formData.append("description", issue.description)
+              formData.append("title", issue.title)
+
+
+              for (const fileObj of issue.files) {
+                  formData.append("files", fileObj.file)
+              }
+
+              console.log("sender request...")
+
+
+              const response = await fetch("/api/gemini-service", {
+                  method: "POST",
+                  body: formData,
+              })
+
+              console.log("Response status:", response.status)
+
+              const data = await response.json()
+
+              if (!response.ok || !data.message) {
+                  console.error("Gemini feilet:", data)
+                  continue
+              }
+
+              const updatedIssue = {
+                  ...issue,
+                  aiResponse: data.message,
+                  wcagLabel: data.wcagLabel,
+                  
+              }
+
+
+              updatedIssues.push(updatedIssue)
+
+
+              console.log("=== DATA FRA BACKEND ===", data)
+
+
+              // send til Github med WCAG-level
+               await fetch("/api/github/issues", {
+                   method: "POST",
+                   headers: { "Content-Type": "application/json" },
+                   body: JSON.stringify({
+                       title: issue.title || "Tilgjengelighetsproblem",
+                       body: data.message,
+                       labels: data.wcagLabel ? [data.wcagLabel] : [],
+                   }),
+               })
+              
+          }
+
+          // oppdater state og send videre i ett steg
+          setIssues(updatedIssues)
+          onSubmit(updatedIssues)
+
+       
+        
+
+      } catch (error) {
+          console.error("Feil ved innsending", error)
+      }
+
+    
   }
 
   return (
