@@ -14,7 +14,24 @@ export async function generateWithGemini(req, res) {
         }
 
         const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
-        const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite-preview" });
+        const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
+
+
+        // bygg filkontekst-setning til prompten
+
+        let fileContextLine = '';
+        const imageFiles = files.filter(f => f?.mimetype?.startsWith("image/"));
+        const pdfFiles = files.filter(f => f?.mimetype === "application/pdf");
+        const hasVideo = files.some(f => f?.mimetype?.startsWith("video/"));
+
+        if (imageFiles.length > 0 && pdfFiles.length > 0) {
+            fileContextLine = `Brukeren har vedlagt ${imageFiles.length} bilde(r) og ${pdfFiles.length} PDF-dokument(er). Analyser disse sammen med beskrivelsen nedenfor.`;
+        } else if (imageFiles.length > 0) {
+            fileContextLine = `Brukeren har vedlagt ${imageFiles.length} bilde(r). Analyser det/de vedlagte bildet/bildene konkret — beskriv hva du faktisk ser i bildet som er relevant for tilgjengelighetsproblemet.`;
+        } else if (pdfFiles.length > 0) {
+            fileContextLine = `Brukeren har vedlagt ${pdfFiles.length} PDF-dokument(er). Analyser innholdet i dokumentet(ene) konkret.`;
+        }
+
 
         let prompt = `
     Du er en ekspert på universell utforming og WCAG-standarder.
@@ -25,12 +42,15 @@ Svar UTEN markdown-formatering. Ikke bruk ###, **, *, eller andre markdown-tegn.
 
 ${!title || title.trim() === ''
             ? 'TITTEL: Generer en kort og presis tittel (maks 8 ord) som beskriver problemet.\n'
-            : 'TITTEL: ${ title }\n'
+            : `TITTEL: ${title}\n`
     }
-    
+
+
+    ${fileContextLine ? fileContextLine + '\n' : ''}
 
 BESKRIVELSE FRA BRUKER:
 ${description}
+
 
 Gi en strukturert analyse med følgende seksjoner:
 
@@ -41,6 +61,9 @@ Gi en strukturert analyse med følgende seksjoner:
 
 2. Rotårsak
 Forklar den underliggende tekniske eller designmessige årsaken til problemet. Vær konkret.
+${imageFiles.length > 0 ? 'VIKTIG: Når du beskriver funn fra det/de vedlagte bildet/bildene, angi eksplisitt at observasjonen er basert på det bildet (f.eks "I det vedlagte skjermbildet ser jeg..." eller "Bildet viser..."). Dette skiller visuell observasjon fra generell WCAG-kunnskap.'  : ''}
+${pdfFiles.length > 0 ? 'VIKTIG: Når du refererer til innhold fra det vedlagte PDF-dokumentet, angi eksplisitt at informasjonen er hentet fra dokumentet (f.eks "ifølge det vedlagte dokumentet..." eller "Rapporten beskriver...."). Dette gjør det tydelig for leseren hvilken informasjon som kommer fra brukerens eget kildemateriale kontra generell WCAG-kunnskap.' : ''}
+
 
 3. Konsekvens for bruker
 Beskriv hvem som rammes og hvordan (f.eks. blinde brukere, motorisk nedsatte, eldre).
@@ -56,37 +79,30 @@ Beskriv hvordan hvert tiltak kan testes og verifiseres (automatisk test, manuell
 
 
 
-        let imageParts = [];
-        let hasVideo = false;
+        // bygg innholdsdeler til Gemini
 
-        for (const file of files) {
+        const contentParts = [{ text: prompt }];
 
-            if (file?.mimetype.startsWith("image/")) {
-                imageParts.push({
-                    inlineData: {
-                        mimeType: file.mimetype,
-                        data: file.buffer.toString("base64"),
-                    },
-                });
-
-
-            }
-
-            if (file.mimetype.startsWith("video/")) {
-                hasVideo = true;
-            }
-
+        for (const file of imageFiles) {
+            contentParts.push({
+                inlineData: {
+                    mimeType: file.mimetype,
+                    data: file.buffer.toString("base64"),
+                },
+            });
         }
 
-        const content = imageParts.length > 0
-            ? [{ text: prompt }, ...imageParts]
-            : [{ text: prompt }];
-
-
-
+        for (const file of pdfFiles) {
+            contentParts.push({
+                inlineData: {
+                    mimeType: "application/pdf",
+                    data: file.buffer.toString("base64"),
+                },
+            });
+        }
         
 
-        const result = await model.generateContent(content);
+        const result = await model.generateContent(contentParts);
         const message =
             result?.response?.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
