@@ -194,6 +194,7 @@ function ReportForm({ issues, setIssues, onSubmit }) {
 
               const updatedIssue = {
                   ...issue,
+                  title: issue.title.trim() !== '' ? issue.title : (data.generatedTitle ?? issue.title),
                   aiResponse: data.message,
                   wcagLabel: data.wcagLabel,
                   
@@ -211,7 +212,7 @@ function ReportForm({ issues, setIssues, onSubmit }) {
                    method: "POST",
                    headers: { "Content-Type": "application/json" },
                    body: JSON.stringify({
-                       title: issue.title || "Tilgjengelighetsproblem",
+                       title: issue.title.trim() !== '' ? issue.title : (data.generatedTitle ?? 'Tilgjengelighetsproblem'),
                        body: data.message,
                        labels: data.wcagLabel ? [data.wcagLabel] : [],
                    }),
@@ -276,7 +277,7 @@ function ReportForm({ issues, setIssues, onSubmit }) {
             />
 
             <div className="upload-group">
-              <p>Last opp vedlegg (i form av fil, bilde eller video)</p>
+              <p>Last opp vedlegg (i form av fil eller bilde)</p>
               <input
                 id={`report-file-${issue.id}`}
                 type="file"

@@ -64,7 +64,7 @@ function Home() {
     const mockGithubIssues = allSubmittedIssues.map((issue, index) => ({
       ...issue,
       githubIssueNumber: index + 1,
-      githubIssueUrl: `https://github.com/hltnina/brukertilbakemelding_KI/issues/${index + 1}`,
+      githubIssueUrl: `https://github.com/hltnina/brukertilbakemelding_KI/issues/$`,
     }))
 
     setTimeout(() => {
