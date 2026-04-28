@@ -248,9 +248,17 @@ function ReportForm({ issues, setIssues, onSubmit }) {
 
   return (
     <div className="report-form-shell">
-      <h3>Konfigurasjon</h3>
+          <h3>Konfigurasjon</h3>
 
-      <div className="issue-list">
+          <div className="privacy-notice">
+             
+              <p>
+                  Unngå å inkludere personopplysninger eller sensitiv informasjon i beskrivelser og vedlegg.
+              </p>
+          </div>
+
+          <div className="issue-list">
+              
         {issues.map((issue, index) => (
           <section key={issue.id} className="issue-card">
             <div className="issue-card-header">
@@ -275,7 +283,9 @@ function ReportForm({ issues, setIssues, onSubmit }) {
               onChange={(event) =>
                 handleIssueChange(issue.id, 'title', event.target.value)
               }
-            />
+                />
+
+                
 
             <TextAreaField
               label="Problembeskrivelse*"
@@ -289,7 +299,9 @@ function ReportForm({ issues, setIssues, onSubmit }) {
             />
 
             <div className="upload-group">
-              <p>Last opp vedlegg (i form av fil eller bilde)</p>
+                    <p>Last opp vedlegg (i form av fil eller bilde)</p>
+
+                    
               <input
                 id={`report-file-${issue.id}`}
                 type="file"
