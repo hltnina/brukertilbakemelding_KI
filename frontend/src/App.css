@@ -452,11 +452,16 @@
   gap: 0.75rem;
 }
 
-.input-field label {
-  color: #111827;
-  font-size: 1.05rem;
-  font-weight: 600;
-}
+    .input-field label {
+        color: #111827;
+        font-size: 1.05rem;
+        font-weight: 600;
+    }
+
+.analysis-tag--a   { background: #FCEBEB; color: #A32D2D; }
+.analysis-tag--aa  { background: #FAEEDA; color: #854F0B; }
+.analysis-tag--aaa { background: #E6F1FB; color: #185FA5; }
+
 
 .input-field input {
   width: 100%;
@@ -998,6 +1003,19 @@
   font-size: 1rem;
   line-height: 1.5;
   box-shadow: 0 8px 20px rgba(15, 23, 42, 0.18);
+}
+
+.privacy-notice {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+    background-color: #e8f0fe;
+    border: 1px solid #b3c8f5;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: #1a3a6b;
+    margin-bottom: 1.5rem;
 }
 
 .confirmation-message-box p {

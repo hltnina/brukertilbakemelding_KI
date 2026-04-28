@@ -192,36 +192,49 @@ function ReportForm({ issues, setIssues, onSubmit }) {
                   continue
               }
 
-              const updatedIssue = {
-                  ...issue,
-                  aiResponse: data.message,
-                  wcagLabel: data.wcagLabel,
-                  
-              }
+             
 
 
-              updatedIssues.push(updatedIssue)
+              
 
 
               console.log("=== DATA FRA BACKEND ===", data)
 
 
               // send til Github med WCAG-level
-               await fetch("/api/github/issues", {
+               const githubResponse = await fetch("/api/github/issues", {
                    method: "POST",
                    headers: { "Content-Type": "application/json" },
                    body: JSON.stringify({
-                       title: issue.title || "Tilgjengelighetsproblem",
+                       title: issue.title.trim() !== '' ? issue.title : (data.generatedTitle ?? 'Tilgjengelighetsproblem'),
                        body: data.message,
                        labels: data.wcagLabel ? [data.wcagLabel] : [],
                    }),
                })
-              
+
+              const githubData = await githubResponse.json()
+              const githubIssueNumber = githubData?.number ?? null
+              const githubIssueUrl = githubData?.html_url ?? null
+
+
+               const updatedIssue = {
+                  ...issue,
+                  title: issue.title.trim() !== '' ? issue.title : (data.generatedTitle ?? issue.title),
+                  aiResponse: data.message,
+                  wcagLabel: data.wcagLabel,
+                  githubIssueNumber,
+                  githubIssueUrl,
+                  
+              }
+                updatedIssues.push(updatedIssue)
           }
 
           // oppdater state og send videre i ett steg
           setIssues(updatedIssues)
           onSubmit(updatedIssues)
+
+
+          
 
        
         
@@ -235,9 +248,17 @@ function ReportForm({ issues, setIssues, onSubmit }) {
 
   return (
     <div className="report-form-shell">
-      <h3>Konfigurasjon</h3>
+          <h3>Konfigurasjon</h3>
 
-      <div className="issue-list">
+          <div className="privacy-notice">
+             
+              <p>
+                  Unngå å inkludere personopplysninger eller sensitiv informasjon i beskrivelser og vedlegg.
+              </p>
+          </div>
+
+          <div className="issue-list">
+              
         {issues.map((issue, index) => (
           <section key={issue.id} className="issue-card">
             <div className="issue-card-header">
@@ -262,7 +283,9 @@ function ReportForm({ issues, setIssues, onSubmit }) {
               onChange={(event) =>
                 handleIssueChange(issue.id, 'title', event.target.value)
               }
-            />
+                />
+
+                
 
             <TextAreaField
               label="Problembeskrivelse*"
@@ -276,7 +299,9 @@ function ReportForm({ issues, setIssues, onSubmit }) {
             />
 
             <div className="upload-group">
-              <p>Last opp vedlegg (i form av fil, bilde eller video)</p>
+                    <p>Last opp vedlegg (i form av fil eller bilde)</p>
+
+                    
               <input
                 id={`report-file-${issue.id}`}
                 type="file"

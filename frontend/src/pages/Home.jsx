@@ -93,17 +93,12 @@ function Home() {
     setLoadingText('Oppretter GitHub issues...')
     setIsLoading(true)
 
-    const mockGithubIssues = allSubmittedIssues.map((issue, index) => ({
-      ...issue,
-      githubIssueNumber: index + 1,
-      githubIssueUrl: `https://github.com/hltnina/brukertilbakemelding_KI/issues/${index + 1}`,
-    }))
-
+  
     setTimeout(() => {
       setSubmissionMode('all')
       setSubmittedIssue(null)
       setSubmittedIssues(allSubmittedIssues)
-      setCreatedGithubIssues(mockGithubIssues)
+      setCreatedGithubIssues(allSubmittedIssues)
       setView('confirmation')
       requestAnimationFrame(() => {
         scrollToReportSection()
