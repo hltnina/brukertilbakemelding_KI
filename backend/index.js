@@ -1,43 +1,28 @@
-import express from "express";
 import dotenv from "dotenv";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import express from "express";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import geminiRoutes  from "./routes/geminiRoutes.js";
+import  githubRoutes  from "./routes/githubRoutes.js";
 
-dotenv.config();
+const currentFilePath = fileURLToPath(import.meta.url);
+const currentDirPath = path.dirname(currentFilePath);
+
+dotenv.config({ path: path.join(currentDirPath, ".env") });
+
 
 const app = express();
-app.use(express.json());
-app.post("/api/gemini-service", async (req, res) => {
-  try {
-    const { prompt } = req.body;
+const PORT = Number(process.env.PORT) || 3000;
 
-    console.log(req.body);
+    app.use(express.json());
 
-    if (!prompt) {
-      return res
-        .status(400)
-        .json({ error: "Prompt is required in the request body." });
-    }
-
-    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
-
-    const result = await model.generateContent(prompt);
-
-    console.log("result", result.response.candidates[0].content.parts[0].text);
-
-    res.json({
-      success: true,
-      message: result.response.candidates[0].content.parts[0].text,
-    });
-  } catch (error) {
-    console.error("Error generating content:", error);
-    res
-      .status(500)
-      .json({ error: "Failed to generate content. Please try again." });
-  }
+    app.get("/", (_req, res) => {
+  return res.json({ ok: true, message: "API is running" });
 });
 
-const PORT = 3000;
+app.use("/api", geminiRoutes);
+app.use("/api/github", githubRoutes);
+
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
