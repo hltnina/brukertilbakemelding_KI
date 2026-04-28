@@ -19,7 +19,16 @@ const Footer = () => {
           </p>
           <p className="text-base italic text-slate-600">
             Utviklet i samarbeid med Gruppe 03 og Tingtun
-          </p>
+                  </p>
+
+                  <p className="text-sm mt-4">
+                      <a
+                          href="/privacy-policy"
+                          className="text-blue-600 underline hover:text-blue-800"
+                      >
+                          Personvernerklæring
+                      </a>
+                  </p>
         </div>
       </div>
     </footer>
