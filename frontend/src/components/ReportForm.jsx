@@ -192,23 +192,17 @@ function ReportForm({ issues, setIssues, onSubmit }) {
                   continue
               }
 
-              const updatedIssue = {
-                  ...issue,
-                  title: issue.title.trim() !== '' ? issue.title : (data.generatedTitle ?? issue.title),
-                  aiResponse: data.message,
-                  wcagLabel: data.wcagLabel,
-                  
-              }
+             
 
 
-              updatedIssues.push(updatedIssue)
+              
 
 
               console.log("=== DATA FRA BACKEND ===", data)
 
 
               // send til Github med WCAG-level
-               await fetch("/api/github/issues", {
+               const githubResponse = await fetch("/api/github/issues", {
                    method: "POST",
                    headers: { "Content-Type": "application/json" },
                    body: JSON.stringify({
@@ -217,12 +211,30 @@ function ReportForm({ issues, setIssues, onSubmit }) {
                        labels: data.wcagLabel ? [data.wcagLabel] : [],
                    }),
                })
-              
+
+              const githubData = await githubResponse.json()
+              const githubIssueNumber = githubData?.number ?? null
+              const githubIssueUrl = githubData?.html_url ?? null
+
+
+               const updatedIssue = {
+                  ...issue,
+                  title: issue.title.trim() !== '' ? issue.title : (data.generatedTitle ?? issue.title),
+                  aiResponse: data.message,
+                  wcagLabel: data.wcagLabel,
+                  githubIssueNumber,
+                  githubIssueUrl,
+                  
+              }
+                updatedIssues.push(updatedIssue)
           }
 
           // oppdater state og send videre i ett steg
           setIssues(updatedIssues)
           onSubmit(updatedIssues)
+
+
+          
 
        
         
