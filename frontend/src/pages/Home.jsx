@@ -44,13 +44,45 @@ function Home() {
     }, 2000)
   }
 
-  const handleIssueUpdate = (issueId, updates) => {
-    setIssues((currentIssues) =>
-      currentIssues.map((issue) =>
-        issue.id === issueId ? { ...issue, ...updates } : issue,
-      ),
-    )
-  }
+  const handleIssueUpdate = async (issueId, updates) => {
+  let updatedIssue = null
+
+  setIssues((currentIssues) =>
+    currentIssues.map((issue) => {
+      if (issue.id !== issueId) return issue
+      updatedIssue = { ...issue, ...updates }
+      return updatedIssue
+    }),
+  )
+
+  if (!updatedIssue) return
+
+  const res = await fetch('/api/gemini-service', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      title: updatedIssue.title,
+      description: updatedIssue.description,
+      // files: ... (kun hvis du sender multipart senere)
+    }),
+  })
+
+  const data = await res.json()
+  if (!res.ok) throw new Error(data?.error || 'Gemini failed')
+
+  setIssues((currentIssues) =>
+    currentIssues.map((issue) =>
+      issue.id === issueId
+        ? {
+            ...issue,
+            aiResponse: data.message || '',
+            wcagLabel: data.wcagLabel || null,
+            title: issue.title || data.generatedTitle || issue.title,
+          }
+        : issue,
+    ),
+  )
+}
 
   const handleSingleSubmission = (issue) => {
     setSubmissionMode('single')
@@ -61,17 +93,12 @@ function Home() {
     setLoadingText('Oppretter GitHub issues...')
     setIsLoading(true)
 
-    const mockGithubIssues = allSubmittedIssues.map((issue, index) => ({
-      ...issue,
-      githubIssueNumber: index + 1,
-      githubIssueUrl: `https://github.com/hltnina/brukertilbakemelding_KI/issues/$`,
-    }))
-
+  
     setTimeout(() => {
       setSubmissionMode('all')
       setSubmittedIssue(null)
       setSubmittedIssues(allSubmittedIssues)
-      setCreatedGithubIssues(mockGithubIssues)
+      setCreatedGithubIssues(allSubmittedIssues)
       setView('confirmation')
       requestAnimationFrame(() => {
         scrollToReportSection()
@@ -98,7 +125,6 @@ function Home() {
         isOpen={isContactOpen}
         onClose={() => setIsContactOpen(false)}
       />
-
       <section className="home-hero">
         <div className="hero-inner">
           <h1>Velkommen</h1>

@@ -1005,6 +1005,19 @@
   box-shadow: 0 8px 20px rgba(15, 23, 42, 0.18);
 }
 
+.privacy-notice {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+    background-color: #e8f0fe;
+    border: 1px solid #b3c8f5;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: #1a3a6b;
+    margin-bottom: 1.5rem;
+}
+
 .confirmation-message-box p {
   margin: 0 0 1.5rem;
 }
