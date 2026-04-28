@@ -7,6 +7,8 @@ function SubmissionConfirmation({
 }) {
   const isBulkSubmission = submissionMode === 'all'
   const issueTitle = submittedIssue?.title?.trim() || 'den valgte saken'
+  const singleIssueNumber = submittedIssue?.githubIssueNumber
+  const singleIssueUrl = submittedIssue?.githubIssueUrl
 
   return (
     <div className="confirmation-shell">
@@ -54,13 +56,23 @@ function SubmissionConfirmation({
           <>
             <p>
               Innsendingen for <strong>{issueTitle}</strong> er nå sendt inn til
-              Github Issues, og har <strong>saksnummeret #1.</strong>
+              Github Issues, og har{' '}
+              <strong>
+                saksnummeret #
+                {singleIssueNumber || '?'}
+              </strong>
+              .
             </p>
 
             <p>
               Se saken i Github Issues ved å trykke på{' '}
-              <strong>“Se Github Issue #1”</strong>, eller generer en analyse av
-              en ny sak ved å trykke på <strong>“Ny sak”</strong>.
+              <strong>
+                “Se Github Issue
+                {singleIssueNumber ? ` #${singleIssueNumber}` : ''}
+                ”
+              </strong>
+              , eller generer en analyse av en ny sak ved å trykke på{' '}
+              <strong>“Ny sak”</strong>.
             </p>
           </>
         )}
@@ -75,9 +87,21 @@ function SubmissionConfirmation({
           Ny sak/Hjem
         </button>
         {!isBulkSubmission ? (
-          <button type="button" className="confirmation-issue-button">
-            Se Github Issue #1
-          </button>
+          <a
+            className="confirmation-issue-button"
+            href={singleIssueUrl || '#'}
+            target="_blank"
+            rel="noreferrer"
+            aria-disabled={!singleIssueUrl}
+            onClick={(event) => {
+              if (!singleIssueUrl) {
+                event.preventDefault()
+              }
+            }}
+          >
+            Se Github Issue
+            {singleIssueNumber ? ` #${singleIssueNumber}` : ''}
+          </a>
         ) : null}
       </div>
     </div>
