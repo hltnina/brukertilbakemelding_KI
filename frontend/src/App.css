@@ -452,11 +452,16 @@
   gap: 0.75rem;
 }
 
-.input-field label {
-  color: #111827;
-  font-size: 1.05rem;
-  font-weight: 600;
-}
+    .input-field label {
+        color: #111827;
+        font-size: 1.05rem;
+        font-weight: 600;
+    }
+
+.analysis-tag--a   { background: #FCEBEB; color: #A32D2D; }
+.analysis-tag--aa  { background: #FAEEDA; color: #854F0B; }
+.analysis-tag--aaa { background: #E6F1FB; color: #185FA5; }
+
 
 .input-field input {
   width: 100%;
@@ -502,47 +507,6 @@
   color: #7f1d1d;
   font-size: 0.95rem;
   font-weight: 600;
-}
-
-.option-group {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.option-group p {
-  margin: 0;
-  color: #111827;
-  font-size: 1.05rem;
-  font-weight: 600;
-}
-
-.option-buttons {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
-}
-
-.option-buttons button {
-  border: 0;
-  border-radius: 0.9rem;
-  padding: 0.95rem 1.1rem;
-  background: #ffffff;
-  color: #111827;
-  font-size: 1rem;
-  font-weight: 500;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.18);
-  transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-.option-buttons button:hover {
-  background: #e5e7eb;
-  transform: translateY(-1px);
-}
-
-.option-buttons button.is-active {
-  background: #1f3b73;
-  color: #f8fafc;
 }
 
 .upload-group {
@@ -1041,6 +1005,19 @@
   box-shadow: 0 8px 20px rgba(15, 23, 42, 0.18);
 }
 
+.privacy-notice {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+    background-color: #e8f0fe;
+    border: 1px solid #b3c8f5;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: #1a3a6b;
+    margin-bottom: 1.5rem;
+}
+
 .confirmation-message-box p {
   margin: 0 0 1.5rem;
 }
@@ -1182,9 +1159,6 @@
     width: 100%;
   }
 
-  .option-buttons {
-    grid-template-columns: 1fr;
-  }
 }
 .analysis-loader-card {
   width: 100%;
