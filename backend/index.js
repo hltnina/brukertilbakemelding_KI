@@ -2,8 +2,8 @@ import dotenv from "dotenv";
 import express from "express";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { geminiRoutes } from "./routes/geminiRoutes.js";
-import { githubRoutes } from "./routes/githubRoutes.js";
+import geminiRoutes  from "./routes/geminiRoutes.js";
+import  githubRoutes  from "./routes/githubRoutes.js";
 
 const currentFilePath = fileURLToPath(import.meta.url);
 const currentDirPath = path.dirname(currentFilePath);

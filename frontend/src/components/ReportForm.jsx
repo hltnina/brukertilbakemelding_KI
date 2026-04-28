@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import InputField from './InputField'
 import TextAreaField from './TextAreaField'
+import Loader from './Loader'
+
 
 const createEmptyIssue = (index) => ({
   id: `issue-${index}-${Date.now()}`,
@@ -135,7 +137,7 @@ function ReportForm({ issues, setIssues, onSubmit }) {
     )
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const nextErrors = {}
     let firstInvalidFieldId = null
 
@@ -158,16 +160,105 @@ function ReportForm({ issues, setIssues, onSubmit }) {
         field?.focus()
       })
       return
-    }
+      }
 
-    onSubmit(issues)
+      try {
+          const updatedIssues = []
+
+          for (const issue of issues) {
+              const formData = new FormData()
+              formData.append("description", issue.description)
+              formData.append("title", issue.title)
+
+
+              for (const fileObj of issue.files) {
+                  formData.append("files", fileObj.file)
+              }
+
+              console.log("sender request...")
+
+
+              const response = await fetch("/api/gemini-service", {
+                  method: "POST",
+                  body: formData,
+              })
+
+              console.log("Response status:", response.status)
+
+              const data = await response.json()
+
+              if (!response.ok || !data.message) {
+                  console.error("Gemini feilet:", data)
+                  continue
+              }
+
+             
+
+
+              
+
+
+              console.log("=== DATA FRA BACKEND ===", data)
+
+
+              // send til Github med WCAG-level
+               const githubResponse = await fetch("/api/github/issues", {
+                   method: "POST",
+                   headers: { "Content-Type": "application/json" },
+                   body: JSON.stringify({
+                       title: issue.title.trim() !== '' ? issue.title : (data.generatedTitle ?? 'Tilgjengelighetsproblem'),
+                       body: data.message,
+                       labels: data.wcagLabel ? [data.wcagLabel] : [],
+                   }),
+               })
+
+              const githubData = await githubResponse.json()
+              const githubIssueNumber = githubData?.number ?? null
+              const githubIssueUrl = githubData?.html_url ?? null
+
+
+               const updatedIssue = {
+                  ...issue,
+                  title: issue.title.trim() !== '' ? issue.title : (data.generatedTitle ?? issue.title),
+                  aiResponse: data.message,
+                  wcagLabel: data.wcagLabel,
+                  githubIssueNumber,
+                  githubIssueUrl,
+                  
+              }
+                updatedIssues.push(updatedIssue)
+          }
+
+          // oppdater state og send videre i ett steg
+          setIssues(updatedIssues)
+          onSubmit(updatedIssues)
+
+
+          
+
+       
+        
+
+      } catch (error) {
+          console.error("Feil ved innsending", error)
+      }
+
+    
   }
 
   return (
     <div className="report-form-shell">
-      <h3>Konfigurasjon</h3>
+          <h3>Konfigurasjon</h3>
 
-      <div className="issue-list">
+          <div className="privacy-notice">
+             
+              <p>
+                  Unngå å inkludere personopplysninger eller sensitiv informasjon i beskrivelser og vedlegg.
+              </p>
+          </div>
+
+          <div className="issue-list">
+              
         {issues.map((issue, index) => (
           <section key={issue.id} className="issue-card">
             <div className="issue-card-header">
@@ -192,7 +283,9 @@ function ReportForm({ issues, setIssues, onSubmit }) {
               onChange={(event) =>
                 handleIssueChange(issue.id, 'title', event.target.value)
               }
-            />
+                />
+
+                
 
             <TextAreaField
               label="Problembeskrivelse*"
@@ -206,7 +299,9 @@ function ReportForm({ issues, setIssues, onSubmit }) {
             />
 
             <div className="upload-group">
-              <p>Last opp vedlegg (i form av fil, bilde eller video)</p>
+                    <p>Last opp vedlegg (i form av fil eller bilde)</p>
+
+                    
               <input
                 id={`report-file-${issue.id}`}
                 type="file"
