@@ -30,7 +30,20 @@ const PrivacyPolicy = () => {
                     <h2 className="text-xl font-semibold">Deling av data</h2>
                     <p className="mt-2">
                         For å analysere innholdet benytter vi en ekstern KI-tjeneste (Google Gemini API).
-                        Dette innebærer at tekst og eventuelle bilder sendes til Google for behandling.
+                        Dette innebærer at tekst og eventuelle bilder sendes til Google for behandling.{" "}
+
+                        <a
+                        href="https://ai.google.dev/gemini-api/terms"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 underline hover:text-blue-800"
+                        >
+                          Les mer om hvordan Google behandler data her.
+                        </a>
+                         
+
+                        
+                        
                     </p>
                     <p className="mt-2">
                         I tillegg sendes informasjon videre til GitHub via GitHub API for å opprette en sak (issue).
