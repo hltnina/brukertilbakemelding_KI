@@ -152,7 +152,7 @@ function ReportForm({ issues, setIssues, onSubmit }) {
           return
         }
 
-        if (issue.description.trim().length < 20) {
+        if (issue.description.trim().length < 15) {
             nextErrors[`${issue.id}-description`] =
                 'Beskrivelsen er for kort. Vennligst beskriv problemet mer detaljert.'
             if (!firstInvalidFieldId) {
