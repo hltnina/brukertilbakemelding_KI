@@ -147,8 +147,18 @@ function ReportForm({ issues, setIssues, onSubmit }) {
           'Du må fylle inn problembeskrivelse.'
         if (!firstInvalidFieldId) {
           firstInvalidFieldId = `report-description-${issue.id}`
+          }
+
+          return
         }
-      }
+
+        if (issue.description.trim().length < 20) {
+            nextErrors[`${issue.id}-description`] =
+                'Beskrivelsen er for kort. Vennligst beskriv problemet mer detaljert.'
+            if (!firstInvalidFieldId) {
+                firstInvalidFieldId = `report-description-${issue.id}`
+            }
+        }
     })
 
     setErrors(nextErrors)
