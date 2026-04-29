@@ -111,7 +111,8 @@ function Home() {
     setSubmissionMode('single')
     setSubmittedIssue(null)
     setSubmittedIssues([])
-    setCreatedGithubIssues([])
+      setCreatedGithubIssues([])
+      setIssues([createEmptyIssue(1)])
     setView('form')
     requestAnimationFrame(() => {
       scrollToReportSection()
