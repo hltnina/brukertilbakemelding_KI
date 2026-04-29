@@ -68,15 +68,9 @@ const handleIssueUpdate = async (issueId, updates) => {
     formData.append('description', updates.description || '')
 
   const res = await fetch('/api/gemini-service', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      title: updatedIssue.title,
-      description: updatedIssue.description,
-      // files: ... (kun hvis du sender multipart senere)
-    }),
+  method: 'POST',
+  body: formData,
   })
-
     const data = await res.json()
 
     if (!res.ok) {
@@ -104,7 +98,7 @@ const handleIssueUpdate = async (issueId, updates) => {
   }
 }
 
-  const handleSingleSubmission = async (issue) => {
+const handleSingleSubmission = async (issue) => {
   setLoadingText('Oppretter GitHub issue...')
   setIsLoading(true)
 
@@ -131,9 +125,15 @@ const handleIssueUpdate = async (issueId, updates) => {
       githubIssueUrl: githubData?.html_url ?? null,
     }
 
-    setSubmissionMode('single')
+    setSubmissionMode('all')
+    setSubmittedIssue(null)
     setSubmittedIssue(submittedWithGithub)
     setCreatedGithubIssues([submittedWithGithub])
+    setView('confirmation')
+
+    requestAnimationFrame(() => {
+      scrollToReportSection()
+    })
   } catch (error) {
     console.error('Feil ved GitHub innsending', error)
   } finally {
@@ -141,35 +141,64 @@ const handleIssueUpdate = async (issueId, updates) => {
   }
 }
 
-  const handleAllSubmissions = (allSubmittedIssues) => {
-    setLoadingText('Oppretter GitHub issues...')
-    setIsLoading(true)
+const handleAllSubmissions = async (allSubmittedIssues) => {
+  setLoadingText('Oppretter GitHub issues...')
+  setIsLoading(true)
 
-  
-    setTimeout(() => {
-      setSubmissionMode('all')
-      setSubmittedIssue(null)
-      setSubmittedIssues(allSubmittedIssues)
-      setCreatedGithubIssues(allSubmittedIssues)
-      setView('confirmation')
-      requestAnimationFrame(() => {
-        scrollToReportSection()
+  try {
+    const createdIssues = []
+
+    for (const issue of allSubmittedIssues) {
+      const res = await fetch('/api/github/issues', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: issue.title || 'Tilgjengelighetsproblem',
+          body: issue.aiResponse || issue.description,
+          labels: issue.wcagLabel ? [issue.wcagLabel] : [],
+        }),
       })
-      setIsLoading(false)
-    }, 1500)
-  }
 
-  const handleReset = () => {
-    setSubmissionMode('single')
-    setSubmittedIssue(null)
-    setSubmittedIssues([])
-      setCreatedGithubIssues([])
-      setIssues([createEmptyIssue(1)])
-    setView('form')
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data?.error || 'GitHub failed')
+      }
+
+      createdIssues.push({
+        ...issue,
+        githubIssueNumber: data?.number ?? null,
+        githubIssueUrl: data?.html_url ?? null,
+      })
+    }
+
+    setSubmissionMode('all')
+    setSubmittedIssues(createdIssues)
+    setCreatedGithubIssues(createdIssues)
+    setView('confirmation')
+
     requestAnimationFrame(() => {
       scrollToReportSection()
     })
+  } catch (error) {
+    console.error('Feil ved batch GitHub', error)
+  } finally {
+    setIsLoading(false)
   }
+}
+
+const handleReset = () => {
+  setSubmissionMode('single')
+  setSubmittedIssue(null)
+  setSubmittedIssues([])
+  setCreatedGithubIssues([])
+  setIssues([createEmptyIssue(1)])
+  setView('form')
+
+  requestAnimationFrame(() => {
+    scrollToReportSection()
+  })
+}
 
   return (
     <>

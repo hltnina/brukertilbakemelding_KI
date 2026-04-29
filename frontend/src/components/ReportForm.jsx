@@ -37,7 +37,7 @@ const getFileCategoryLabel = (fileName) => {
   return 'Fil'
 }
 
-function ReportForm({ issues, setIssues, onSubmit }) {
+function ReportForm({ issues, setIssues, onSubmit, setIsLoading, setLoadingText }) {
   const [errors, setErrors] = useState({})
 
   const handleIssueChange = (issueId, field, value) => {
@@ -172,6 +172,9 @@ function ReportForm({ issues, setIssues, onSubmit }) {
       return
       }
 
+      setLoadingText('Genererer analyse med KI...')
+      setIsLoading(true)
+
       try {
           const updatedIssues = []
 
@@ -202,39 +205,15 @@ function ReportForm({ issues, setIssues, onSubmit }) {
                   continue
               }
 
-             
-
-
-              
-
-
               console.log("=== DATA FRA BACKEND ===", data)
-
-
-              // send til Github med WCAG-level
-               const githubResponse = await fetch("/api/github/issues", {
-                   method: "POST",
-                   headers: { "Content-Type": "application/json" },
-                   body: JSON.stringify({
-                       title: issue.title.trim() !== '' ? issue.title : (data.generatedTitle ?? 'Tilgjengelighetsproblem'),
-                       body: data.message,
-                       labels: data.wcagLabel ? [data.wcagLabel] : [],
-                   }),
-               })
-
-              const githubData = await githubResponse.json()
-              const githubIssueNumber = githubData?.number ?? null
-              const githubIssueUrl = githubData?.html_url ?? null
-
 
                const updatedIssue = {
                   ...issue,
-                  title: issue.title.trim() !== '' ? issue.title : (data.generatedTitle ?? issue.title),
+                  title: issue.title.trim() !== ''
+                    ? issue.title
+                    : data.generatedTitle || 'Tilgjengelighetsproblem',
                   aiResponse: data.message,
                   wcagLabel: data.wcagLabel,
-                  githubIssueNumber,
-                  githubIssueUrl,
-                  
               }
                 updatedIssues.push(updatedIssue)
           }
@@ -244,15 +223,11 @@ function ReportForm({ issues, setIssues, onSubmit }) {
           onSubmit(updatedIssues)
 
 
-          
-
-       
-        
-
       } catch (error) {
-          console.error("Feil ved innsending", error)
+        console.error("Feil ved innsending", error)
+      } finally {
+        setIsLoading(false)
       }
-
     
   }
 
