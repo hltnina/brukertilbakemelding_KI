@@ -31,31 +31,41 @@ function Home() {
   }
 
   const handleFormSubmit = (submittedIssues) => {
-    setLoadingText('Genererer analyse...')
-    setIsLoading(true)
-    setIssues(submittedIssues)
+  setIssues(submittedIssues)
+  setView('analysis')
+  requestAnimationFrame(() => {
+    scrollToReportSection()
+  })
+}
 
-    setTimeout(() => {
-      setView('analysis')
-      requestAnimationFrame(() => {
-        scrollToReportSection()
-      })
-      setIsLoading(false)
-    }, 2000)
-  }
+const handleIssueUpdate = async (issueId, updates) => {
+  const originalTitle = updates.originalTitle || ''
+  const draftTitle = updates.title || ''
 
-  const handleIssueUpdate = async (issueId, updates) => {
-  let updatedIssue = null
+  const titleWasChanged =
+    draftTitle.trim() !== '' && draftTitle.trim() !== originalTitle.trim()
+
+  const titleForGemini = titleWasChanged ? draftTitle : ''
+
+  setLoadingText('Oppdaterer analyse med KI...')
+  setIsLoading(true)
 
   setIssues((currentIssues) =>
-    currentIssues.map((issue) => {
-      if (issue.id !== issueId) return issue
-      updatedIssue = { ...issue, ...updates }
-      return updatedIssue
-    }),
+    currentIssues.map((issue) =>
+      issue.id === issueId
+        ? {
+            ...issue,
+            title: draftTitle,
+            description: updates.description,
+          }
+        : issue
+    )
   )
 
-  if (!updatedIssue) return
+  try {
+    const formData = new FormData()
+    formData.append('title', titleForGemini)
+    formData.append('description', updates.description || '')
 
   const res = await fetch('/api/gemini-service', {
     method: 'POST',
@@ -67,27 +77,69 @@ function Home() {
     }),
   })
 
-  const data = await res.json()
-  if (!res.ok) throw new Error(data?.error || 'Gemini failed')
+    const data = await res.json()
 
-  setIssues((currentIssues) =>
-    currentIssues.map((issue) =>
-      issue.id === issueId
-        ? {
-            ...issue,
-            aiResponse: data.message || '',
-            wcagLabel: data.wcagLabel || null,
-            title: issue.title || data.generatedTitle || issue.title,
-          }
-        : issue,
-    ),
-  )
+    if (!res.ok) {
+      throw new Error(data?.error || 'Gemini failed')
+    }
+
+    setIssues((currentIssues) =>
+      currentIssues.map((issue) =>
+        issue.id === issueId
+          ? {
+              ...issue,
+              aiResponse: data.message || '',
+              wcagLabel: data.wcagLabel || null,
+              title: titleWasChanged
+                ? draftTitle
+                : data.generatedTitle || issue.title || 'Tilgjengelighetsproblem',
+            }
+          : issue,
+      ),
+    )
+  } catch (error) {
+    console.error('Feil ved oppdatering', error)
+  } finally {
+    setIsLoading(false)
+  }
 }
 
-  const handleSingleSubmission = (issue) => {
+  const handleSingleSubmission = async (issue) => {
+  setLoadingText('Oppretter GitHub issue...')
+  setIsLoading(true)
+
+  try {
+    const githubResponse = await fetch('/api/github/issues', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: issue.title || 'Tilgjengelighetsproblem',
+        body: issue.aiResponse || issue.description,
+        labels: issue.wcagLabel ? [issue.wcagLabel] : [],
+      }),
+    })
+
+    const githubData = await githubResponse.json()
+
+    if (!githubResponse.ok) {
+      throw new Error(githubData?.error || 'GitHub issue failed')
+    }
+
+    const submittedWithGithub = {
+      ...issue,
+      githubIssueNumber: githubData?.number ?? null,
+      githubIssueUrl: githubData?.html_url ?? null,
+    }
+
     setSubmissionMode('single')
-    setSubmittedIssue(issue)
+    setSubmittedIssue(submittedWithGithub)
+    setCreatedGithubIssues([submittedWithGithub])
+  } catch (error) {
+    console.error('Feil ved GitHub innsending', error)
+  } finally {
+    setIsLoading(false)
   }
+}
 
   const handleAllSubmissions = (allSubmittedIssues) => {
     setLoadingText('Oppretter GitHub issues...')
@@ -162,6 +214,8 @@ function Home() {
                 issues={issues}
                 setIssues={setIssues}
                 onSubmit={handleFormSubmit}
+                setIsLoading={setIsLoading}
+                setLoadingText={setLoadingText}
               />
             )}
 
@@ -171,6 +225,8 @@ function Home() {
                 onSaveIssue={handleIssueUpdate}
                 onSubmitSingle={handleSingleSubmission}
                 onSubmitAll={handleAllSubmissions}
+                setIsLoading={setIsLoading}
+                setLoadingText={setLoadingText}
               />
             )}
 
