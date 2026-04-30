@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 
-function AnalysisResult({ issues, onSaveIssue, onSubmitSingle, onSubmitAll }) {
+function AnalysisResult({ issues, onSaveIssue, onSubmitSingle, onSubmitAll, setIsLoading,
+  setLoadingText, }) {
   const [submittedIssues, setSubmittedIssues] = useState([])
   const [editingIssueId, setEditingIssueId] = useState(null)
   const [draftTitle, setDraftTitle] = useState('')
@@ -8,7 +9,13 @@ function AnalysisResult({ issues, onSaveIssue, onSubmitSingle, onSubmitAll }) {
   const [editError, setEditError] = useState('')
   const hasTriggeredAutoConfirmation = useRef(false)
 
-  const handleSingleSubmit = (issue) => {
+  const handleSingleSubmit = async (issue) => {
+  setLoadingText('Oppretter GitHub issue...')
+  setIsLoading(true)
+
+  try {
+    await onSubmitSingle(issue)
+
     setSubmittedIssues((currentSubmittedIssues) => {
       if (
         currentSubmittedIssues.some(
@@ -20,9 +27,10 @@ function AnalysisResult({ issues, onSaveIssue, onSubmitSingle, onSubmitAll }) {
 
       return [...currentSubmittedIssues, issue]
     })
-
-    onSubmitSingle(issue)
+  } finally {
+    setIsLoading(false)
   }
+}
 
   const getOriginalIssueNumber = (issueId) =>
     issues.findIndex((issue) => issue.id === issueId) + 1
@@ -41,15 +49,16 @@ function AnalysisResult({ issues, onSaveIssue, onSubmitSingle, onSubmitAll }) {
     setEditError('')
   }
 
-  const handleSaveEdit = (issueId) => {
+  const handleSaveEdit = async (issue) => {
     if (!draftDescription.trim()) {
       setEditError('Problembeskrivelse må fylles ut før du kan lagre.')
       return
     }
 
-    onSaveIssue(issueId, {
-      title: draftTitle,
-      description: draftDescription,
+    await onSaveIssue(issue.id, {
+    title: draftTitle,
+    description: draftDescription,
+    originalTitle: issue.title,
     })
 
     handleCancelEdit()
@@ -157,7 +166,7 @@ function AnalysisResult({ issues, onSaveIssue, onSubmitSingle, onSubmitAll }) {
                     <button
                       type="button"
                       className="analysis-submit-button"
-                      onClick={() => handleSaveEdit(issue.id)}
+                      onClick={() => handleSaveEdit(issue)}
                     >
                       Lagre endringer
                     </button>
