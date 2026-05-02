@@ -1,0 +1,27 @@
+name: Build check
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  frontend-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Hent kode
+        uses: actions/checkout@v4
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Installer frontend dependencies
+        working-directory: frontend
+        run: npm install
+
+      - name: Bygg frontend
+        working-directory: frontend
+        run: npm run build
