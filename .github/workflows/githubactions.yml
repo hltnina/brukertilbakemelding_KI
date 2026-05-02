@@ -1,4 +1,4 @@
-name: Build check
+name: Full Build Check
 
 on:
   push:
@@ -6,22 +6,36 @@ on:
   workflow_dispatch:
 
 jobs:
-  frontend-build:
+  frontend:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Hent kode
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Installer Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      - name: Installer frontend dependencies
+      - name: Install frontend
         working-directory: frontend
         run: npm install
 
-      - name: Bygg frontend
+      - name: Build frontend
         working-directory: frontend
         run: npm run build
+
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install backend
+        working-directory: backend
+        run: npm install
+
+      - name: Start backend (test)
+        working-directory: backend
+        run: node index.js & sleep 5
