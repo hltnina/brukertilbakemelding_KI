@@ -31,65 +31,174 @@ function Home() {
   }
 
   const handleFormSubmit = (submittedIssues) => {
-    setLoadingText('Genererer analyse...')
-    setIsLoading(true)
-    setIssues(submittedIssues)
+  setIssues(submittedIssues)
+  setView('analysis')
+  requestAnimationFrame(() => {
+    scrollToReportSection()
+  })
+}
 
-    setTimeout(() => {
-      setView('analysis')
-      requestAnimationFrame(() => {
-        scrollToReportSection()
-      })
-      setIsLoading(false)
-    }, 2000)
-  }
+const handleIssueUpdate = async (issueId, updates) => {
+  const originalTitle = updates.originalTitle || ''
+  const draftTitle = updates.title || ''
 
-  const handleIssueUpdate = (issueId, updates) => {
+  const titleWasChanged =
+    draftTitle.trim() !== '' && draftTitle.trim() !== originalTitle.trim()
+
+  const titleForGemini = titleWasChanged ? draftTitle : ''
+
+  setLoadingText('Oppdaterer analyse med KI...')
+  setIsLoading(true)
+
+  setIssues((currentIssues) =>
+    currentIssues.map((issue) =>
+      issue.id === issueId
+        ? {
+            ...issue,
+            title: draftTitle,
+            description: updates.description,
+          }
+        : issue
+    )
+  )
+
+  try {
+    const formData = new FormData()
+    formData.append('title', titleForGemini)
+    formData.append('description', updates.description || '')
+
+  const res = await fetch('/api/gemini-service', {
+  method: 'POST',
+  body: formData,
+  })
+    const data = await res.json()
+
+    if (!res.ok) {
+      throw new Error(data?.error || 'Gemini failed')
+    }
+
     setIssues((currentIssues) =>
       currentIssues.map((issue) =>
-        issue.id === issueId ? { ...issue, ...updates } : issue,
+        issue.id === issueId
+          ? {
+              ...issue,
+              aiResponse: data.message || '',
+              wcagLabel: data.wcagLabel || null,
+              title: titleWasChanged
+                ? draftTitle
+                : data.generatedTitle || issue.title || 'Tilgjengelighetsproblem',
+            }
+          : issue,
       ),
     )
+  } catch (error) {
+    console.error('Feil ved oppdatering', error)
+  } finally {
+    setIsLoading(false)
   }
+}
 
-  const handleSingleSubmission = (issue) => {
-    setSubmissionMode('single')
-    setSubmittedIssue(issue)
-  }
+const handleSingleSubmission = async (issue) => {
+  setLoadingText('Oppretter GitHub issue...')
+  setIsLoading(true)
 
-  const handleAllSubmissions = (allSubmittedIssues) => {
-    setLoadingText('Oppretter GitHub issues...')
-    setIsLoading(true)
+  try {
+    const githubResponse = await fetch('/api/github/issues', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: issue.title || 'Tilgjengelighetsproblem',
+        body: issue.aiResponse || issue.description,
+        labels: issue.wcagLabel ? [issue.wcagLabel] : [],
+      }),
+    })
 
-    const mockGithubIssues = allSubmittedIssues.map((issue, index) => ({
+    const githubData = await githubResponse.json()
+
+    if (!githubResponse.ok) {
+      throw new Error(githubData?.error || 'GitHub issue failed')
+    }
+
+    const submittedWithGithub = {
       ...issue,
-      githubIssueNumber: index + 1,
-      githubIssueUrl: `https://github.com/hltnina/brukertilbakemelding_KI/issues/${index + 1}`,
-    }))
+      githubIssueNumber: githubData?.number ?? null,
+      githubIssueUrl: githubData?.html_url ?? null,
+    }
 
-    setTimeout(() => {
-      setSubmissionMode('all')
-      setSubmittedIssue(null)
-      setSubmittedIssues(allSubmittedIssues)
-      setCreatedGithubIssues(mockGithubIssues)
-      setView('confirmation')
-      requestAnimationFrame(() => {
-        scrollToReportSection()
-      })
-      setIsLoading(false)
-    }, 1500)
-  }
-
-  const handleReset = () => {
-    setSubmissionMode('single')
+    setSubmissionMode('all')
     setSubmittedIssue(null)
-    setSubmittedIssues([])
-    setCreatedGithubIssues([])
-    setView('form')
+    setSubmittedIssue(submittedWithGithub)
+    setCreatedGithubIssues([submittedWithGithub])
+    setView('confirmation')
+
     requestAnimationFrame(() => {
       scrollToReportSection()
     })
+  } catch (error) {
+    console.error('Feil ved GitHub innsending', error)
+  } finally {
+    setIsLoading(false)
   }
+}
+
+const handleAllSubmissions = async (allSubmittedIssues) => {
+  setLoadingText('Oppretter GitHub issues...')
+  setIsLoading(true)
+
+  try {
+    const createdIssues = []
+
+    for (const issue of allSubmittedIssues) {
+      const res = await fetch('/api/github/issues', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: issue.title || 'Tilgjengelighetsproblem',
+          body: issue.aiResponse || issue.description,
+          labels: issue.wcagLabel ? [issue.wcagLabel] : [],
+        }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data?.error || 'GitHub failed')
+      }
+
+      createdIssues.push({
+        ...issue,
+        githubIssueNumber: data?.number ?? null,
+        githubIssueUrl: data?.html_url ?? null,
+      })
+    }
+
+    setSubmissionMode('all')
+    setSubmittedIssues(createdIssues)
+    setCreatedGithubIssues(createdIssues)
+    setView('confirmation')
+
+    requestAnimationFrame(() => {
+      scrollToReportSection()
+    })
+  } catch (error) {
+    console.error('Feil ved batch GitHub', error)
+  } finally {
+    setIsLoading(false)
+  }
+}
+
+const handleReset = () => {
+  setSubmissionMode('single')
+  setSubmittedIssue(null)
+  setSubmittedIssues([])
+  setCreatedGithubIssues([])
+  setIssues([createEmptyIssue(1)])
+  setView('form')
+
+  requestAnimationFrame(() => {
+    scrollToReportSection()
+  })
+}
 
   return (
     <>
@@ -98,7 +207,6 @@ function Home() {
         isOpen={isContactOpen}
         onClose={() => setIsContactOpen(false)}
       />
-
       <section className="home-hero">
         <div className="hero-inner">
           <h1>Velkommen</h1>
@@ -135,6 +243,8 @@ function Home() {
                 issues={issues}
                 setIssues={setIssues}
                 onSubmit={handleFormSubmit}
+                setIsLoading={setIsLoading}
+                setLoadingText={setLoadingText}
               />
             )}
 
@@ -144,6 +254,8 @@ function Home() {
                 onSaveIssue={handleIssueUpdate}
                 onSubmitSingle={handleSingleSubmission}
                 onSubmitAll={handleAllSubmissions}
+                setIsLoading={setIsLoading}
+                setLoadingText={setLoadingText}
               />
             )}
 

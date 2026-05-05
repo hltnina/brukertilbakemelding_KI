@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import InputField from './InputField'
 import TextAreaField from './TextAreaField'
+import Loader from './Loader'
+
 
 const createEmptyIssue = (index) => ({
   id: `issue-${index}-${Date.now()}`,
@@ -35,7 +37,7 @@ const getFileCategoryLabel = (fileName) => {
   return 'Fil'
 }
 
-function ReportForm({ issues, setIssues, onSubmit }) {
+function ReportForm({ issues, setIssues, onSubmit, setIsLoading, setLoadingText }) {
   const [errors, setErrors] = useState({})
 
   const handleIssueChange = (issueId, field, value) => {
@@ -135,7 +137,7 @@ function ReportForm({ issues, setIssues, onSubmit }) {
     )
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const nextErrors = {}
     let firstInvalidFieldId = null
 
@@ -145,8 +147,18 @@ function ReportForm({ issues, setIssues, onSubmit }) {
           'Du må fylle inn problembeskrivelse.'
         if (!firstInvalidFieldId) {
           firstInvalidFieldId = `report-description-${issue.id}`
+          }
+
+          return
         }
-      }
+
+        if (issue.description.trim().length < 15) {
+            nextErrors[`${issue.id}-description`] =
+                'Beskrivelsen er for kort. Vennligst beskriv problemet mer detaljert.'
+            if (!firstInvalidFieldId) {
+                firstInvalidFieldId = `report-description-${issue.id}`
+            }
+        }
     })
 
     setErrors(nextErrors)
@@ -158,16 +170,80 @@ function ReportForm({ issues, setIssues, onSubmit }) {
         field?.focus()
       })
       return
-    }
+      }
 
-    onSubmit(issues)
+      setLoadingText('Genererer analyse med KI...')
+      setIsLoading(true)
+
+      try {
+          const updatedIssues = []
+
+          for (const issue of issues) {
+              const formData = new FormData()
+              formData.append("description", issue.description)
+              formData.append("title", issue.title)
+
+
+              for (const fileObj of issue.files) {
+                  formData.append("files", fileObj.file)
+              }
+
+              console.log("sender request...")
+
+
+              const response = await fetch("/api/gemini-service", {
+                  method: "POST",
+                  body: formData,
+              })
+
+              console.log("Response status:", response.status)
+
+              const data = await response.json()
+
+              if (!response.ok || !data.message) {
+                  console.error("Gemini feilet:", data)
+                  continue
+              }
+
+              console.log("=== DATA FRA BACKEND ===", data)
+
+               const updatedIssue = {
+                  ...issue,
+                  title: issue.title.trim() !== ''
+                    ? issue.title
+                    : data.generatedTitle || 'Tilgjengelighetsproblem',
+                  aiResponse: data.message,
+                  wcagLabel: data.wcagLabel,
+              }
+                updatedIssues.push(updatedIssue)
+          }
+
+          // oppdater state og send videre i ett steg
+          setIssues(updatedIssues)
+          onSubmit(updatedIssues)
+
+
+      } catch (error) {
+        console.error("Feil ved innsending", error)
+      } finally {
+        setIsLoading(false)
+      }
+    
   }
 
   return (
     <div className="report-form-shell">
-      <h3>Konfigurasjon</h3>
+          <h3>Konfigurasjon</h3>
 
-      <div className="issue-list">
+          <div className="privacy-notice">
+             
+              <p>
+                  Unngå å inkludere personopplysninger eller sensitiv informasjon i beskrivelser og vedlegg.
+              </p>
+          </div>
+
+          <div className="issue-list">
+              
         {issues.map((issue, index) => (
           <section key={issue.id} className="issue-card">
             <div className="issue-card-header">
@@ -192,7 +268,9 @@ function ReportForm({ issues, setIssues, onSubmit }) {
               onChange={(event) =>
                 handleIssueChange(issue.id, 'title', event.target.value)
               }
-            />
+                />
+
+                
 
             <TextAreaField
               label="Problembeskrivelse*"
@@ -206,7 +284,9 @@ function ReportForm({ issues, setIssues, onSubmit }) {
             />
 
             <div className="upload-group">
-              <p>Last opp vedlegg (i form av fil, bilde eller video)</p>
+                    <p>Last opp vedlegg (i form av fil eller bilde)</p>
+
+                    
               <input
                 id={`report-file-${issue.id}`}
                 type="file"
