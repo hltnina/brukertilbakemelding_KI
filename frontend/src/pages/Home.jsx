@@ -1,0 +1,280 @@
+import { useState } from 'react'
+import AnalysisResult from '../components/AnalysisResult'
+import ContactModal from '../components/ContactModal'
+import Footer from '../components/Footer'
+import Navbar from '../components/Navbar'
+import ReportForm from '../components/ReportForm'
+import SubmissionConfirmation from '../components/SubmissionConfirmation'
+import Loader from '../components/Loader'
+
+const createEmptyIssue = (index) => ({
+  id: `issue-${index}-${Date.now()}`,
+  title: '',
+  description: '',
+  files: [],
+})
+
+function Home() {
+  const [view, setView] = useState('form')
+  const [isLoading, setIsLoading] = useState(false)
+  const [loadingText, setLoadingText] = useState('')
+  const [isContactOpen, setIsContactOpen] = useState(false)
+  const [issues, setIssues] = useState([createEmptyIssue(1)])
+  const [submissionMode, setSubmissionMode] = useState('single')
+  const [submittedIssue, setSubmittedIssue] = useState(null)
+  const [submittedIssues, setSubmittedIssues] = useState([])
+  const [createdGithubIssues, setCreatedGithubIssues] = useState([])
+
+  const scrollToReportSection = () => {
+    const reportSection = document.getElementById('report-section')
+    reportSection?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  const handleFormSubmit = (submittedIssues) => {
+  setIssues(submittedIssues)
+  setView('analysis')
+  requestAnimationFrame(() => {
+    scrollToReportSection()
+  })
+}
+
+const handleIssueUpdate = async (issueId, updates) => {
+  const originalTitle = updates.originalTitle || ''
+  const draftTitle = updates.title || ''
+
+  const titleWasChanged =
+    draftTitle.trim() !== '' && draftTitle.trim() !== originalTitle.trim()
+
+  const titleForGemini = titleWasChanged ? draftTitle : ''
+
+  setLoadingText('Oppdaterer analyse med KI...')
+  setIsLoading(true)
+
+  setIssues((currentIssues) =>
+    currentIssues.map((issue) =>
+      issue.id === issueId
+        ? {
+            ...issue,
+            title: draftTitle,
+            description: updates.description,
+          }
+        : issue
+    )
+  )
+
+  try {
+    const formData = new FormData()
+    formData.append('title', titleForGemini)
+    formData.append('description', updates.description || '')
+
+  const res = await fetch('/api/gemini-service', {
+  method: 'POST',
+  body: formData,
+  })
+    const data = await res.json()
+
+    if (!res.ok) {
+      throw new Error(data?.error || 'Gemini failed')
+    }
+
+    setIssues((currentIssues) =>
+      currentIssues.map((issue) =>
+        issue.id === issueId
+          ? {
+              ...issue,
+              aiResponse: data.message || '',
+              wcagLabel: data.wcagLabel || null,
+              title: titleWasChanged
+                ? draftTitle
+                : data.generatedTitle || issue.title || 'Tilgjengelighetsproblem',
+            }
+          : issue,
+      ),
+    )
+  } catch (error) {
+    console.error('Feil ved oppdatering', error)
+  } finally {
+    setIsLoading(false)
+  }
+}
+
+const handleSingleSubmission = async (issue) => {
+  setLoadingText('Oppretter GitHub issue...')
+  setIsLoading(true)
+
+  try {
+    const githubResponse = await fetch('/api/github/issues', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: issue.title || 'Tilgjengelighetsproblem',
+        body: issue.aiResponse || issue.description,
+        labels: issue.wcagLabel ? [issue.wcagLabel] : [],
+      }),
+    })
+
+    const githubData = await githubResponse.json()
+
+    if (!githubResponse.ok) {
+      throw new Error(githubData?.error || 'GitHub issue failed')
+    }
+
+    const submittedWithGithub = {
+      ...issue,
+      githubIssueNumber: githubData?.number ?? null,
+      githubIssueUrl: githubData?.html_url ?? null,
+    }
+
+    setSubmissionMode('all')
+    setSubmittedIssue(null)
+    setSubmittedIssue(submittedWithGithub)
+    setCreatedGithubIssues([submittedWithGithub])
+    setView('confirmation')
+
+    requestAnimationFrame(() => {
+      scrollToReportSection()
+    })
+  } catch (error) {
+    console.error('Feil ved GitHub innsending', error)
+  } finally {
+    setIsLoading(false)
+  }
+}
+
+const handleAllSubmissions = async (allSubmittedIssues) => {
+  setLoadingText('Oppretter GitHub issues...')
+  setIsLoading(true)
+
+  try {
+    const createdIssues = []
+
+    for (const issue of allSubmittedIssues) {
+      const res = await fetch('/api/github/issues', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: issue.title || 'Tilgjengelighetsproblem',
+          body: issue.aiResponse || issue.description,
+          labels: issue.wcagLabel ? [issue.wcagLabel] : [],
+        }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data?.error || 'GitHub failed')
+      }
+
+      createdIssues.push({
+        ...issue,
+        githubIssueNumber: data?.number ?? null,
+        githubIssueUrl: data?.html_url ?? null,
+      })
+    }
+
+    setSubmissionMode('all')
+    setSubmittedIssues(createdIssues)
+    setCreatedGithubIssues(createdIssues)
+    setView('confirmation')
+
+    requestAnimationFrame(() => {
+      scrollToReportSection()
+    })
+  } catch (error) {
+    console.error('Feil ved batch GitHub', error)
+  } finally {
+    setIsLoading(false)
+  }
+}
+
+const handleReset = () => {
+  setSubmissionMode('single')
+  setSubmittedIssue(null)
+  setSubmittedIssues([])
+  setCreatedGithubIssues([])
+  setIssues([createEmptyIssue(1)])
+  setView('form')
+
+  requestAnimationFrame(() => {
+    scrollToReportSection()
+  })
+}
+
+  return (
+    <>
+      <Navbar onContactClick={() => setIsContactOpen(true)} />
+      <ContactModal
+        isOpen={isContactOpen}
+        onClose={() => setIsContactOpen(false)}
+      />
+      <section className="home-hero">
+        <div className="hero-inner">
+          <h1>Velkommen</h1>
+          <p>
+            Fra tilbakemelding til ferdig GitHub Issue! Vi analyserer dine filer og
+            foreslår konkrete utbedringer.
+          </p>
+          <button
+            type="button"
+            className="hero-button"
+            onClick={scrollToReportSection}
+          >
+            Start nå
+          </button>
+        </div>
+      </section>
+
+      <section id="report-section" className="report-section">
+        <div className="report-intro">
+          <h2>Send inn din rapport</h2>
+          <p>
+            Beskriv problemet eller velg en prompt-mal. Last opp vedlegg og send
+            inn for umiddelbare svar. Se gjennom og send deretter direkte til
+            Github issues.
+          </p>
+        </div>
+
+       {isLoading ? (
+         <Loader text={loadingText} />
+      ) : (
+        <>
+            {view === 'form' && (
+              <ReportForm
+                issues={issues}
+                setIssues={setIssues}
+                onSubmit={handleFormSubmit}
+                setIsLoading={setIsLoading}
+                setLoadingText={setLoadingText}
+              />
+            )}
+
+            {view === 'analysis' && (
+              <AnalysisResult
+                issues={issues}
+                onSaveIssue={handleIssueUpdate}
+                onSubmitSingle={handleSingleSubmission}
+                onSubmitAll={handleAllSubmissions}
+                setIsLoading={setIsLoading}
+                setLoadingText={setLoadingText}
+              />
+            )}
+
+            {view === 'confirmation' && (
+              <SubmissionConfirmation
+                onReset={handleReset}
+                submissionMode={submissionMode}
+                submittedIssue={submittedIssue}
+                submittedIssues={submittedIssues}
+                createdGithubIssues={createdGithubIssues}
+              />
+            )}
+          </>
+        )}
+
+        <Footer />
+      </section>
+    </>
+  )
+}
+
+export default Home
